@@ -1,0 +1,5 @@
+package pro.cleverlife.clevervoice.service;
+
+public class VoiceRecognitionService {
+
+}
