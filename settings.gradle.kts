@@ -16,9 +16,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // Добавьте эти репозитории для Vosk
+        maven { url = uri("https://jitpack.io") }
+        maven { url = uri("https://alphacephei.com/maven/") }
     }
 }
 
 rootProject.name = "CleverVoice"
 include(":app")
- 
