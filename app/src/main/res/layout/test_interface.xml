@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Значение яркости (0–255)"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextBrightness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="3" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Быстрые команды"
+                android:textStyle="bold"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="8dp">
+
+                <Button
+                    android:id="@+id/buttonMinus10"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="-10"
+                    android:layout_marginEnd="4dp" />
+
+                <Button
+                    android:id="@+id/buttonMinus5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="-5"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginStart="4dp" />
+
+                <Button
+                    android:id="@+id/buttonPlus5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="+5"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginStart="4dp" />
+
+                <Button
+                    android:id="@+id/buttonPlus10"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="+10"
+                    android:layout_marginStart="4dp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Управляющие команды"
+                android:textStyle="bold"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp">
+
+                <Button
+                    android:id="@+id/buttonSet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="SET" />
+
+                <Button
+                    android:id="@+id/buttonIncrease"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="INCREASE" />
+
+                <Button
+                    android:id="@+id/buttonDecrease"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="DECREASE" />
+
+                <Button
+                    android:id="@+id/buttonMax"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="MAX" />
+
+                <Button
+                    android:id="@+id/buttonMin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="MIN" />
+
+                <Button
+                    android:id="@+id/buttonMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="MEDIUM" />
+
+                <Button
+                    android:id="@+id/buttonGetInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="GET_INFO" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

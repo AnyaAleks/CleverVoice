@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import pro.cleverlife.clevervoice.API.BrightnessAPI;
 import pro.cleverlife.clevervoice.processor.CommandProcessor;
 import pro.cleverlife.clevervoice.service.SoundManager;
 import pro.cleverlife.clevervoice.service.VoiceRecognitionService;
@@ -31,14 +33,92 @@ public class MainActivity extends AppCompatActivity {
     private CountDownTimer commandTimer;
     private boolean isListening = false;
     private StringBuilder logBuilder = new StringBuilder();
+    private EditText editTextBrightness;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.test_interface);
+        //setContentView(R.layout.activity_main);
 
-        initViews();
-        checkPermissions();
+        initBrightnessControls();
+        //initViews();
+        //checkPermissions();
+    }
+
+
+    private void initBrightnessControls() {
+        editTextBrightness = findViewById(R.id.editTextBrightness);
+
+        // === SET ===
+        findViewById(R.id.buttonSet).setOnClickListener(v -> {
+            String input = editTextBrightness.getText().toString().trim();
+            if (input.isEmpty()) {
+                Toast.makeText(this, "Введите значение для SET", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                int value = Integer.parseInt(input);
+                if (value < 0 || value > 255) {
+                    Toast.makeText(this, "Яркость должна быть от 0 до 255", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String result = BrightnessAPI.executeCommand(this, BrightnessAPI.BrightnessCommand.SET, String.valueOf(value));
+                Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Некорректное число", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // === Быстрые кнопки: сразу вызывают SET с новым значением ===
+        findViewById(R.id.buttonPlus5).setOnClickListener(v -> applyDeltaToSet(5));
+        findViewById(R.id.buttonPlus10).setOnClickListener(v -> applyDeltaToSet(10));
+        findViewById(R.id.buttonMinus5).setOnClickListener(v -> applyDeltaToSet(-5));
+        findViewById(R.id.buttonMinus10).setOnClickListener(v -> applyDeltaToSet(-10));
+
+        // === Остальные команды (без параметров) ===
+        findViewById(R.id.buttonIncrease).setOnClickListener(v -> {
+            String result = BrightnessAPI.executeCommand(this, BrightnessAPI.BrightnessCommand.INCREASE);
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        });
+
+        findViewById(R.id.buttonDecrease).setOnClickListener(v -> {
+            String result = BrightnessAPI.executeCommand(this, BrightnessAPI.BrightnessCommand.DECREASE);
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        });
+
+        findViewById(R.id.buttonMax).setOnClickListener(v -> {
+            String result = BrightnessAPI.executeCommand(this, BrightnessAPI.BrightnessCommand.MAX);
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        });
+
+        findViewById(R.id.buttonMin).setOnClickListener(v -> {
+            String result = BrightnessAPI.executeCommand(this, BrightnessAPI.BrightnessCommand.MIN);
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        });
+
+        findViewById(R.id.buttonMedium).setOnClickListener(v -> {
+            String result = BrightnessAPI.executeCommand(this, BrightnessAPI.BrightnessCommand.MEDIUM);
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        });
+
+        findViewById(R.id.buttonGetInfo).setOnClickListener(v -> {
+            String result = BrightnessAPI.executeCommand(this, BrightnessAPI.BrightnessCommand.GET_INFO);
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    // Выполняет SET с текущим значением + delta
+    private void applyDeltaToSet(int delta) {
+        String currentText = editTextBrightness.getText().toString().trim();
+        int currentValue = currentText.isEmpty() ? 128 : Integer.parseInt(currentText);
+        int newValue = Math.max(0, Math.min(255, currentValue + delta));
+
+        String result = BrightnessAPI.executeCommand(this, BrightnessAPI.BrightnessCommand.SET, String.valueOf(newValue));
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+
+        // Обновляем поле для обратной связи
+        editTextBrightness.setText(String.valueOf(newValue));
     }
 
     private void initViews() {
