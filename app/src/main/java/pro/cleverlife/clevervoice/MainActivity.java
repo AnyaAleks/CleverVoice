@@ -124,7 +124,7 @@ public class MainActivity extends Activity implements AppInstallWatcher.IAppInst
         super.onCreate(savedInstanceState);
         sMyself = this;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_clever_voice);
         //Log.i("HelloWorld", "We starting_2...");
 
 //        mADWApiManager = new ADWApiManager(this);

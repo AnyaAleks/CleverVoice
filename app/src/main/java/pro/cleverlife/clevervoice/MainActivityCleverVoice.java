@@ -15,6 +15,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import pro.cleverlife.clevervoice.TestInterface.TestBrightnessActivity;
+import pro.cleverlife.clevervoice.TestInterface.TestSoundActivity;
 import pro.cleverlife.clevervoice.processor.CommandProcessor;
 import pro.cleverlife.clevervoice.service.SoundManager;
 import pro.cleverlife.clevervoice.service.VoiceRecognitionService;
@@ -47,7 +48,8 @@ public class MainActivityCleverVoice extends AppCompatActivity {
         statusText = findViewById(R.id.statusText);
         logText = findViewById(R.id.logText);
         startButton = findViewById(R.id.startButton);
-        Button buttonTestBrightness = findViewById(R.id.buttonTestBrightness); // ← новая кнопка
+        Button buttonTestBrightness = findViewById(R.id.buttonTestBrightness);
+        Button buttonTestSound = findViewById(R.id.buttonTestSound);
 
         startButton.setOnClickListener(v -> toggleListening());
 
@@ -56,6 +58,13 @@ public class MainActivityCleverVoice extends AppCompatActivity {
             Intent intent = new Intent(this, TestBrightnessActivity.class);
             startActivity(intent);
         });
+
+        // Обработчик для перехода в тест яркости
+        buttonTestSound.setOnClickListener(v -> {
+            Intent intent = new Intent(this, TestSoundActivity.class);
+            startActivity(intent);
+        });
+
 
         // Изначально кнопка неактивна
         startButton.setEnabled(false);
