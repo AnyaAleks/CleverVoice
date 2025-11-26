@@ -106,23 +106,6 @@
 
             </LinearLayout>
 
-            <!-- Остальная разметка без изменений -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Значение громкости"
-                android:layout_marginTop="16dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextVolume"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLength="3" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -169,12 +152,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="8dp">
-
-                <Button
-                    android:id="@+id/buttonSet"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="SET" />
 
                 <Button
                     android:id="@+id/buttonMax"

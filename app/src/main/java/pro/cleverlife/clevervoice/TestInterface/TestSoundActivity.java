@@ -26,7 +26,6 @@ public class TestSoundActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        editTextVolume = findViewById(R.id.editTextVolume);
         toggleMedia = findViewById(R.id.toggleMedia);
         toggleRing = findViewById(R.id.toggleRing);
         toggleAlarm = findViewById(R.id.toggleAlarm);
@@ -34,12 +33,9 @@ public class TestSoundActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        // SET
-        findViewById(R.id.buttonSet).setOnClickListener(v -> executeSetCommand());
-
         // Кнопки + и -
-        findViewById(R.id.buttonIncrease).setOnClickListener(v -> executeIncreaseCommand(1));
-        findViewById(R.id.buttonDecrease).setOnClickListener(v -> executeDecreaseCommand(1));
+        findViewById(R.id.buttonIncrease).setOnClickListener(v -> executeIncreaseCommand());
+        findViewById(R.id.buttonDecrease).setOnClickListener(v -> executeDecreaseCommand());
 
         // Остальные команды
         findViewById(R.id.buttonMax).setOnClickListener(v -> executeMaxCommand());
@@ -95,49 +91,25 @@ public class TestSoundActivity extends AppCompatActivity {
         throw new IllegalArgumentException("No info command found for: " + baseName);
     }
 
-    private void executeSetCommand() {
-        SoundAPI.SoundCommand[] bases = getSelectedCommands();
-        if (bases == null) return;
-
-        String input = editTextVolume.getText().toString().trim();
-        if (input.isEmpty()) {
-            Toast.makeText(this, "Введите значение громкости", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        try {
-            int value = Integer.parseInt(input);
-            if (value < 0) {
-                Toast.makeText(this, "Громкость не может быть меньше 0", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            for (SoundAPI.SoundCommand base : bases) {
-                String result = SoundAPI.executeCommand(this, base, String.valueOf(value));
-                Toast.makeText(this, base.name() + ": " + result, Toast.LENGTH_SHORT).show();
-            }
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, "Некорректное число", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void executeIncreaseCommand(int delta) {
+    private void executeIncreaseCommand() {
         SoundAPI.SoundCommand[] bases = getSelectedCommands();
         if (bases == null) return;
 
         for (SoundAPI.SoundCommand base : bases) {
             SoundAPI.SoundCommand incCommand = mapBaseToCommand(base, "INCREASE_");
-            String result = SoundAPI.executeCommand(this, incCommand, String.valueOf(delta));
+            // Передаём ПУСТОЙ массив параметров → SoundAPI использует шаг по умолчанию
+            String result = SoundAPI.executeCommand(this, incCommand);
             Toast.makeText(this, base.name() + ": " + result, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void executeDecreaseCommand(int delta) {
+    private void executeDecreaseCommand() {
         SoundAPI.SoundCommand[] bases = getSelectedCommands();
         if (bases == null) return;
 
         for (SoundAPI.SoundCommand base : bases) {
             SoundAPI.SoundCommand decCommand = mapBaseToCommand(base, "DECREASE_");
-            String result = SoundAPI.executeCommand(this, decCommand, String.valueOf(delta));
+            String result = SoundAPI.executeCommand(this, decCommand);
             Toast.makeText(this, base.name() + ": " + result, Toast.LENGTH_SHORT).show();
         }
     }
