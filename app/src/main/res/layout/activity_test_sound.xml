@@ -127,52 +127,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Быстрые команды"
+                android:text="Регулировка громкости"
                 android:textStyle="bold"
                 android:textSize="16sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginTop="8dp">
-
-                <Button
-                    android:id="@+id/buttonMinus5"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="-5"
-                    android:layout_marginEnd="4dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="8dp">
 
-                <Button
-                    android:id="@+id/buttonMinus1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="-1"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginStart="4dp" />
+                    <Button
+                        android:id="@+id/buttonDecrease"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="–"
+                        android:textSize="24sp"
+                        android:layout_marginEnd="16dp" />
 
-                <Button
-                    android:id="@+id/buttonPlus1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="+1"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginStart="4dp" />
+                    <Button
+                        android:id="@+id/buttonIncrease"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:text="+"
+                        android:textSize="24sp"
+                        android:layout_marginStart="16dp" />
 
-                <Button
-                    android:id="@+id/buttonPlus5"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="+5"
-                    android:layout_marginStart="4dp" />
-
-            </LinearLayout>
+                </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"

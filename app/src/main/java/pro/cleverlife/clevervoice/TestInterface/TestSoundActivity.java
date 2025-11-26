@@ -37,11 +37,9 @@ public class TestSoundActivity extends AppCompatActivity {
         // SET
         findViewById(R.id.buttonSet).setOnClickListener(v -> executeSetCommand());
 
-        // Быстрые кнопки
-        findViewById(R.id.buttonPlus1).setOnClickListener(v -> executeIncreaseCommand(1));
-        findViewById(R.id.buttonPlus5).setOnClickListener(v -> executeIncreaseCommand(5));
-        findViewById(R.id.buttonMinus1).setOnClickListener(v -> executeDecreaseCommand(1));
-        findViewById(R.id.buttonMinus5).setOnClickListener(v -> executeDecreaseCommand(5));
+        // Кнопки + и -
+        findViewById(R.id.buttonIncrease).setOnClickListener(v -> executeIncreaseCommand(1));
+        findViewById(R.id.buttonDecrease).setOnClickListener(v -> executeDecreaseCommand(1));
 
         // Остальные команды
         findViewById(R.id.buttonMax).setOnClickListener(v -> executeMaxCommand());
