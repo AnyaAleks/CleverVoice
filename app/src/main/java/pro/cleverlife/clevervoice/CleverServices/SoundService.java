@@ -2,6 +2,7 @@ package pro.cleverlife.clevervoice.CleverServices;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.util.Log;
 
 public class SoundService {
 
@@ -47,6 +48,7 @@ public class SoundService {
         audioManager = (AudioManager) _context.getSystemService(Context.AUDIO_SERVICE);
         if (audioManager != null) {
             int newVolume = Math.min(newValue, getMaxMediaVolume(_context));
+            //Log.i("SOUNDS_CHECK","setMediaVolume = " + newVolume);
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0);
         }
     }
@@ -55,6 +57,7 @@ public class SoundService {
         audioManager = (AudioManager) _context.getSystemService(Context.AUDIO_SERVICE);
         if (audioManager != null) {
             int newVolume = Math.min(newValue, getMaxRingVolume(_context));
+            //Log.i("SOUNDS_CHECK","setRingVolume = " + newVolume);
             audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, newVolume, 0);
         }
     }
@@ -63,6 +66,7 @@ public class SoundService {
         audioManager = (AudioManager) _context.getSystemService(Context.AUDIO_SERVICE);
         if (audioManager != null) {
             int newVolume = Math.min(newValue, getMaxAlarmVolume(_context));
+            //Log.i("SOUNDS_CHECK","setAlarmVolume = " + newVolume);
             audioManager.setStreamVolume(AudioManager.STREAM_ALARM, newVolume, 0);
         }
     }
@@ -71,6 +75,7 @@ public class SoundService {
         audioManager = (AudioManager) _context.getSystemService(Context.AUDIO_SERVICE);
         if (audioManager != null) {
             int newVolume = Math.min(newValue, getMaxNotificationVolume(_context));
+            //Log.i("SOUNDS_CHECK","setNotificationVolume = " + newVolume);
             audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, newVolume, 0);
         }
     }

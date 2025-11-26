@@ -7,7 +7,7 @@ import pro.cleverlife.clevervoice.CleverServices.SoundService;
 
 public class SoundAPI {
     public enum SoundCommand {
-        SET_MEDIA, SET_RING, SET_ALARM, SET_NOTIFICATION,
+        SET_MEDIA, SET_RING, SET_ALARM, SET_NOTIFICATION, //не использовать напрямую!
         INCREASE_MEDIA, INCREASE_RING, INCREASE_ALARM, INCREASE_NOTIFICATION,
         DECREASE_MEDIA, DECREASE_RING, DECREASE_ALARM, DECREASE_NOTIFICATION,
         MAX_MEDIA, MAX_RING, MAX_ALARM, MAX_NOTIFICATION,
