@@ -70,7 +70,16 @@ public class MainActivity extends AppCompatActivity {
         addLog("Инициализация сервисов...");
         voiceService = new VoiceRecognitionService(this);
         commandProcessor = new CommandProcessor(this);
+
+        // Инициализируем SoundManager и передаем звуковые файлы
         soundManager = new SoundManager(this);
+        soundManager.initializeWithSounds(R.raw.victory_tone, R.raw.error_notification);
+
+        if (soundManager.isInitialized()) {
+            addLog("Менеджер звуков инициализирован");
+        } else {
+            addLog("Менеджер звуков не смог загрузить звуковые файлы");
+        }
 
         setupVoiceRecognition();
     }
@@ -110,7 +119,9 @@ public class MainActivity extends AppCompatActivity {
                     addLog(">>> АКТИВАЦИЯ: слово 'Клевер' обнаружено!");
                     addLog(">< У вас 10 секунд для команды...");
                     statusText.setText("Слушаю команду...");
-                    soundManager.playActivationSound();
+                    if (soundManager.isInitialized()) {
+                        soundManager.playActivationSound();
+                    }
                     startCommandTimer(); // Запускаем таймер
                 });
             }
@@ -132,7 +143,9 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     addLog("!!! ОШИБКА: " + error);
                     statusText.setText("Ошибка: " + error);
-                    soundManager.playErrorSound();
+                    if (soundManager.isInitialized()) {
+                        soundManager.playErrorSound();
+                    }
 
                     // Останавливаем таймер при ошибке
                     if (commandTimer != null) {
@@ -203,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startListening() {
         if (voiceService != null) {
-            addLog("=== ЗАПУСК ПРОСЛУШИВАНИЯ ===");
+            addLog("=== ЗАПУСК ПРОСЛУШИВАНИАЯ ===");
             addLog("• Микрофон активирован");
             addLog("• Ожидание активационного слова: 'Клевер'");
             addLog("• Речь до активации игнорируется");
@@ -235,7 +248,9 @@ public class MainActivity extends AppCompatActivity {
             public void onFinish() {
                 addLog(">< ВРЕМЯ ВЫШЛО! Активация сброшена.");
                 statusText.setText(">< Время вышло! Скажите 'Клевер'...");
-                soundManager.playErrorSound();
+                if (soundManager.isInitialized()) {
+                    soundManager.playErrorSound();
+                }
 
                 // Сбрасываем активацию в сервисе
                 if (voiceService != null) {
@@ -251,9 +266,10 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
-
     private void processCommand(String command) {
-        soundManager.playSuccessSound();
+        if (soundManager.isInitialized()) {
+            soundManager.playSuccessSound();
+        }
         addLog("-><- Обработка команды: \"" + command + "\"");
         statusText.setText("Обрабатываю: " + command);
 
@@ -313,6 +329,9 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         if (voiceService != null) {
             voiceService.release();
+        }
+        if (soundManager != null) {
+            soundManager.release();
         }
         if (commandTimer != null) {
             commandTimer.cancel();
