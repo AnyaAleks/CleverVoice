@@ -22,8 +22,16 @@
                 android:textStyle="bold"
                 android:textSize="16sp" />
 
-            <RadioGroup
-                android:id="@+id/radioGroupStream"
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="(можно выбрать несколько, повторное нажатие снимает выбор)"
+                android:textSize="12sp"
+                android:textColor="#666"
+                android:layout_marginBottom="8dp" />
+
+            <!-- ToggleButtons для множественного выбора -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -34,20 +42,31 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <RadioButton
-                        android:id="@+id/radioMedia"
+                    <ToggleButton
+                        android:id="@+id/toggleMedia"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Медиа"
-                        android:checked="true" />
+                        android:textOn="Медиа ✓"
+                        android:textOff="Медиа"
+                        android:layout_marginEnd="4dp"
+                        android:background="@android:color/transparent"
+                        android:textColor="@color/purple_2"
+                        android:textSize="14sp"
+                        android:padding="12dp" />
 
-                    <RadioButton
-                        android:id="@+id/radioRing"
+                    <ToggleButton
+                        android:id="@+id/toggleRing"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Звонок" />
+                        android:textOn="Звонок ✓"
+                        android:textOff="Звонок"
+                        android:layout_marginStart="4dp"
+                        android:background="@android:color/transparent"
+                        android:textColor="@color/purple_2"
+                        android:textSize="14sp"
+                        android:padding="12dp" />
 
                 </LinearLayout>
 
@@ -57,24 +76,37 @@
                     android:orientation="horizontal"
                     android:layout_marginTop="8dp">
 
-                    <RadioButton
-                        android:id="@+id/radioAlarm"
+                    <ToggleButton
+                        android:id="@+id/toggleAlarm"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Будильник" />
+                        android:textOn="Будильник ✓"
+                        android:textOff="Будильник"
+                        android:layout_marginEnd="4dp"
+                        android:background="@android:color/transparent"
+                        android:textColor="@color/purple_2"
+                        android:textSize="14sp"
+                        android:padding="12dp" />
 
-                    <RadioButton
-                        android:id="@+id/radioNotification"
+                    <ToggleButton
+                        android:id="@+id/toggleNotification"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Уведомления" />
+                        android:textOn="Уведомления ✓"
+                        android:textOff="Уведомления"
+                        android:layout_marginStart="4dp"
+                        android:background="@android:color/transparent"
+                        android:textColor="@color/purple_2"
+                        android:textSize="14sp"
+                        android:padding="12dp" />
 
                 </LinearLayout>
 
-            </RadioGroup>
+            </LinearLayout>
 
+            <!-- Остальная разметка без изменений -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
