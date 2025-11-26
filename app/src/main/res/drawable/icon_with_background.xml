@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/main_application_icon" />
+
+    <item
+        android:drawable="@drawable/clever"
+        android:gravity="center"
+        android:width="70dp"
+        android:height="50dp"/>
+
+</layer-list>

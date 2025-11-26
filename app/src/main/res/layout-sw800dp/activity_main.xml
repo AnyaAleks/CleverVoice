@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#906996"
+    tools:context=".MainActivity">
+
+    <!-- Вертикальная группа кнопок слева -->
+
+    <!-- Изображение по центру между кнопками и правым краем -->
+    <LinearLayout
+        android:id="@+id/buttonGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="start"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/textDownlanding"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textVersion">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonStart"
+            style="@style/GradientButton_sw800dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Запустить Clever"
+            app:backgroundTint="@null"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonUpdate"
+            style="@style/GradientButton_sw800dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Обновить Clever"
+            app:backgroundTint="@null"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonUpdateLauncher"
+            style="@style/GradientButton_sw800dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Обновить Launcher"
+            app:backgroundTint="@null"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonReloadApplication"
+            style="@style/GradientButton_sw800dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Перезапуск приложения"
+            app:backgroundTint="@null"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonReloadDevice"
+            style="@style/GradientButton_sw800dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Перезапуск устройства"
+            app:backgroundTint="@null"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonOpenCleverVoice"
+            style="@style/GradientButton_sw800dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Перейти в CLEVER VOICE"
+            app:backgroundTint="@null"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="450dp"
+        android:layout_height="550dp"
+        android:src="@drawable/clever_home"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/buttonGroup"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintVertical_bias="0.5"/>
+
+    <!-- Текст версии вверху слева -->
+    <TextView
+        android:id="@+id/textVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:text="Версия:"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Текст загрузки внизу слева -->
+    <TextView
+        android:id="@+id/textDownlanding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="32dp"
+        android:text="Скачивается:"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

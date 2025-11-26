@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ожидание активации..."
+        android:textSize="18sp"
+        android:gravity="center"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Запустить прослушивание"/>
+
+    <!-- Новая кнопка для перехода к тесту яркости -->
+    <Button
+        android:id="@+id/buttonTestBrightness"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Тест управления яркостью"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#4CAF50"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/logText"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Лог команд будет здесь..."
+        android:scrollbars="vertical"
+        android:scrollbarStyle="insideInset"
+        android:isScrollContainer="true"
+        android:maxLines="100"
+        android:verticalScrollbarPosition="right"/>
+
+</LinearLayout>
