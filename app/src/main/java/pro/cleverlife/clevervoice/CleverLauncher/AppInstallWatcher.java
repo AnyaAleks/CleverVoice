@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import pro.cleverlife.clevervoice.MainActivity;
+
 public class AppInstallWatcher extends BroadcastReceiver {
 
     @Override

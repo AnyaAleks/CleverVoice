@@ -1,45 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:background="#906996"
+    tools:context=".MainActivity">
 
+    <!-- Вертикальная группа кнопок слева -->
+
+    <!-- Изображение по центру между кнопками и правым краем -->
+    <LinearLayout
+        android:id="@+id/buttonGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="start"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/textDownlanding"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textVersion">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonStart"
+            style="@style/GradientButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Запустить Clever"
+            app:backgroundTint="@null"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonUpdate"
+            style="@style/GradientButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Обновить Clever"
+            app:backgroundTint="@null"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonUpdateLauncher"
+            style="@style/GradientButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Обновить Launcher"
+            app:backgroundTint="@null"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonReloadApplication"
+            style="@style/GradientButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Перезапуск приложения"
+            app:backgroundTint="@null"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonReloadDevice"
+            style="@style/GradientButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Перезапуск устройства"
+            app:backgroundTint="@null"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonOpenCleverVoice"
+            style="@style/GradientButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Перейти в CLEVER VOICE"
+            app:backgroundTint="@null"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:src="@drawable/clever_home"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/buttonGroup"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintVertical_bias="0.5"/>
+
+    <!-- Текст версии вверху слева -->
     <TextView
-        android:id="@+id/statusText"
-        android:layout_width="match_parent"
+        android:id="@+id/textVersion"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ожидание активации..."
-        android:textSize="18sp"
-        android:gravity="center"
-        android:layout_marginBottom="32dp"/>
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:text="Версия:"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/startButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Запустить прослушивание"/>
-
-    <!-- Новая кнопка для перехода к тесту яркости -->
-    <Button
-        android:id="@+id/buttonTestBrightness"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Тест управления яркостью"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="#4CAF50"
-        android:textColor="#FFFFFF" />
-
+    <!-- Текст загрузки внизу слева -->
     <TextView
-        android:id="@+id/logText"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="Лог команд будет здесь..."
-        android:scrollbars="vertical"
-        android:scrollbarStyle="insideInset"
-        android:isScrollContainer="true"
-        android:maxLines="100"
-        android:verticalScrollbarPosition="right"/>
+        android:id="@+id/textDownlanding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="32dp"
+        android:text="Скачивается:"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
