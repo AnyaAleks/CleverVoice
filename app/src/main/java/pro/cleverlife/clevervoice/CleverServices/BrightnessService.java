@@ -59,4 +59,47 @@ public class BrightnessService {
     //        Log.i("Request!", "b " + b);
     //        return b;
     }
+
+    //Методы для API
+    public boolean setScreenBrightness(int brightnessValue) {
+        setScreenBrightness(context, brightnessValue);
+        return true;
+    }
+
+    public boolean increaseBrightness(int delta) {
+        int current = getCurrentBrightness(context);
+        setScreenBrightness(context, current + delta);
+        return true;
+    }
+
+    public boolean decreaseBrightness(int delta) {
+        int current = getCurrentBrightness(context);
+        setScreenBrightness(context, current - delta);
+        return true;
+    }
+
+    public boolean setMaxBrightness() {
+        setScreenBrightness(context, 255);
+        return true;
+    }
+
+    public boolean setMinBrightness() {
+        setScreenBrightness(context, 0);
+        return true;
+    }
+
+    public boolean setMediumBrightness() {
+        setScreenBrightness(context, 128);
+        return true;
+    }
+
+    public String getBrightnessInfo() {
+        int current = getCurrentBrightness(context);
+        int percent = (int) (current * 100 / 255.0);
+        return String.format("Яркость: %d%% (%d/255)", percent, current);
+    }
+
+    public boolean hasPermission() {
+        return Settings.System.canWrite(context);
+    }
 }
