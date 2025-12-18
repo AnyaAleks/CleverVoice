@@ -263,6 +263,18 @@ public class VoiceRecognitionService {
         Log.i(TAG, "Voice recognition stopped");
     }
 
+    private boolean isActivationWord(String text) {
+        String lower = text.toLowerCase().trim();
+
+        // Проверяем разные варианты написания
+        return lower.contains("клевер") ||
+                lower.contains("кливер") ||
+                lower.contains("кливэр") ||
+                lower.contains("clever") ||
+                lower.matches(".*к[лэи]вер.*") ||  // regex для вариаций
+                lower.contains(" clever ");         // отдельное слово
+    }
+
     private void processRecognitionResult(String result) {
         try {
             JSONObject jsonResult = new JSONObject(result);
@@ -270,7 +282,7 @@ public class VoiceRecognitionService {
             Log.d(TAG, "Recognized text: " + text);
 
             if (!text.isEmpty()) {
-                if (text.toLowerCase().contains("клевер") && !isInCommandMode) {
+                if (isActivationWord(text) && !isInCommandMode) {
                     // Обнаружено активационное слово
                     isInCommandMode = true;
                     isActivated = true; // Активируем режим команд

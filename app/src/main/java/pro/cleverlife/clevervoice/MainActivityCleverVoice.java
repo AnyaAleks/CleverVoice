@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import pro.cleverlife.clevervoice.AI.TinyLLMProcessor;
+import pro.cleverlife.clevervoice.AI.VoskAIProcessor;
 import pro.cleverlife.clevervoice.TestInterface.TestBrightnessActivity;
 import pro.cleverlife.clevervoice.TestInterface.TestSoundActivity;
 import pro.cleverlife.clevervoice.processor.CommandProcessor;
@@ -27,6 +29,8 @@ public class MainActivityCleverVoice extends AppCompatActivity {
     private VoiceRecognitionService voiceService;
     private CommandProcessor commandProcessor;
     private SoundManager soundManager;
+    private VoskAIProcessor aiProcessor;
+    private TinyLLMProcessor tinyLLMProcessor;
 
     private TextView statusText;
     private TextView logText;
@@ -39,6 +43,38 @@ public class MainActivityCleverVoice extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_clever_voice);
+
+        // Инициализация AI процессоров
+        aiProcessor = new VoskAIProcessor(this);
+        tinyLLMProcessor = new TinyLLMProcessor(this);
+
+        // Загружаем модель в фоновом потоке
+        new Thread(() -> {
+            boolean initialized = tinyLLMProcessor.initialize();
+            runOnUiThread(() -> {
+                if (initialized) {
+                    addLog("✓ AI процессоры инициализированы");
+
+                    // ПРОВЕРЯЕМ, ЗАГРУЖЕНА ЛИ МОДЕЛЬ
+                    boolean aiLoaded = tinyLLMProcessor.isModelLoaded();
+                    addLog("AI модель: " + (aiLoaded ? "ЗАГРУЖЕНА " : "НЕ загружена"));
+
+                    if (aiLoaded) {
+                        addLog("TinyLLaMA будет исправлять ошибки распознавания");
+                    } else {
+                        addLog("⚠Будут использоваться только простые правила");
+
+                        // Тестовая команда для проверки
+                        addLog("Тестовая команда...");
+                        TinyLLMProcessor.CommandResult testResult =
+                                tinyLLMProcessor.understandCommand("яркость максимум");
+                        addLog("Результат: " + testResult.command + " -> " + testResult.action);
+                    }
+                } else {
+                    addLog("✗ Ошибка инициализации AI процессоров");
+                }
+            });
+        }).start();
 
         initViews();
         checkPermissions();
@@ -59,12 +95,11 @@ public class MainActivityCleverVoice extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Обработчик для перехода в тест яркости
+        // Обработчик для перехода в тест звука
         buttonTestSound.setOnClickListener(v -> {
             Intent intent = new Intent(this, TestSoundActivity.class);
             startActivity(intent);
         });
-
 
         // Изначально кнопка неактивна
         startButton.setEnabled(false);
@@ -285,21 +320,101 @@ public class MainActivityCleverVoice extends AppCompatActivity {
     }
 
     private void processCommand(String command) {
-        if (soundManager.isInitialized()) {
-            soundManager.playSuccessSound();
-        }
         addLog("-><- Обработка команды: \"" + command + "\"");
         statusText.setText("Обрабатываю: " + command);
 
-        // Обрабатываем команду
-        commandProcessor.processCommand(command);
-
-        // Возвращаемся в режим ожидания активации
-        if (isListening) {
-            addLog("Ожидание новой активации...");
-            statusText.setText("Скажите 'Клевер' для новой команды...");
-            voiceService.startListening();
+        // Отменяем таймер команды
+        if (commandTimer != null) {
+            commandTimer.cancel();
         }
+
+        // ИСПРАВЛЕНИЕ: Используем VoskAIProcessor вместо TinyLLMProcessor
+        if (aiProcessor != null) {
+            addLog("Передаю команду в VoskAIProcessor");
+
+            // Создаем колбэк для обработки результата
+            VoskAIProcessor.SimpleCallback callback = new VoskAIProcessor.SimpleCallback() {
+                @Override
+                public void onCommandProcessed(boolean success) {
+                    runOnUiThread(() -> {
+                        if (success) {
+                            addLog("✅ Команда успешно выполнена через VoskAIProcessor");
+                            if (soundManager.isInitialized()) {
+                                soundManager.playSuccessSound();
+                            }
+                        } else {
+                            addLog("Не удалось выполнить команду через VoskAIProcessor");
+                            if (soundManager.isInitialized()) {
+                                soundManager.playErrorSound();
+                            }
+                        }
+
+                        // Возвращаемся в режим ожидания активации
+                        if (isListening) {
+                            addLog("Ожидание новой активации...");
+                            statusText.setText("Скажите 'Клевер' для новой команды...");
+                            voiceService.startListening();
+                        }
+                    });
+                }
+            };
+
+            // Вызываем обработку команды через VoskAIProcessor
+            aiProcessor.processRecognizedText(command, callback);
+        } else {
+            addLog("VoskAIProcessor не инициализирован!");
+            // Fallback на старый метод
+            useTinyLLMProcessorFallback(command);
+        }
+    }
+
+    // Старый метод для совместимости
+    private void useTinyLLMProcessorFallback(String command) {
+        new Thread(() -> {
+            try {
+                TinyLLMProcessor.CommandResult result = tinyLLMProcessor.understandCommand(command);
+
+                runOnUiThread(() -> {
+                    if (result != null) {
+                        String logMsg = "TinyLLaMA распознал: " + result.command;
+                        if (result.action != null && !result.action.isEmpty()) {
+                            logMsg += " -> " + result.action;
+                        }
+                        addLog(logMsg);
+
+                        // Воспроизводим звук
+                        if (soundManager.isInitialized()) {
+                            if (!"unknown".equals(result.command)) {
+                                soundManager.playSuccessSound();
+                            } else {
+                                soundManager.playErrorSound();
+                                addLog("⚠ Команда не распознана");
+                            }
+                        }
+                    } else {
+                        addLog("Ошибка обработки команды");
+                        if (soundManager.isInitialized()) {
+                            soundManager.playErrorSound();
+                        }
+                    }
+
+                    // Возвращаемся в режим ожидания активации
+                    if (isListening) {
+                        addLog("Ожидание новой активации...");
+                        statusText.setText("Скажите 'Клевер' для новой команды...");
+                        voiceService.startListening();
+                    }
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    addLog("Ошибка AI обработки: " + e.getMessage());
+                    e.printStackTrace();
+                    if (soundManager.isInitialized()) {
+                        soundManager.playErrorSound();
+                    }
+                });
+            }
+        }).start();
     }
 
     private void addLog(String message) {
@@ -345,6 +460,15 @@ public class MainActivityCleverVoice extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        // Освободите ресурсы TinyLLaMA
+        if (tinyLLMProcessor != null) {
+            tinyLLMProcessor.release();
+        }
+
+        if (aiProcessor != null) {
+            aiProcessor.release();
+        }
         if (voiceService != null) {
             voiceService.release();
         }

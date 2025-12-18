@@ -1,5 +1,7 @@
 package pro.cleverlife.clevervoice.API;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -12,6 +14,8 @@ public class BrightnessAPI {
 
     public static String executeCommand(Context context, BrightnessCommand command, String... params) {
         BrightnessService service = new BrightnessService(context);
+
+        Log.d(TAG, " МЫ В СИСТЕМНОЙ РЕГУЛИРОВКИ ЯРКОСТИ, команда: \"" + command + params + "\"");
 
         if (!service.hasPermission()) {
             return "Нужно разрешение на изменение настроек системы";
