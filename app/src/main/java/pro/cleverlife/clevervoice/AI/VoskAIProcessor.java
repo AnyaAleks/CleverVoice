@@ -109,9 +109,7 @@ public class VoskAIProcessor {
         processRecognizedText(recognizedText, null);
     }
 
-    /**
-     * Обработка распознанного текста с колбэком
-     */
+    //Обработка распознанного текста с колбэком
     public void processRecognizedText(String recognizedText, SimpleCallback callback) {
         Log.i(TAG, "=== НАЧАЛО обработки ===");
         Log.i(TAG, "Исходный текст: \"" + recognizedText + "\"");
@@ -138,7 +136,7 @@ public class VoskAIProcessor {
                 (lowerCorrected.contains("у") && lowerCorrected.contains("дом") &&
                         (lowerCorrected.contains("запусти") || lowerCorrected.contains("открой") || lowerCorrected.contains("включи")))) {
 
-            Log.i(TAG, "⚠️ ОБНАРУЖЕНА КОМАНДА CLEVERHOME С ОШИБКАМИ РАСПОЗНАВАНИЯ");
+            Log.i(TAG, "ОБНАРУЖЕНА КОМАНДА CLEVERHOME С ОШИБКАМИ РАСПОЗНАВАНИЯ");
 
             // Форсируем обработку как CleverHome команды
             String action = "launch"; // По умолчанию запуск
@@ -200,9 +198,7 @@ public class VoskAIProcessor {
         Log.i(TAG, "=== КОНЕЦ обработки ===");
     }
 
-    /**
-     * Основная логика обработки команды
-     */
+    //Основная логика обработки команды
     private void processCommand(String text, final SimpleCallback callback) {
         Log.d(TAG, "НАЧАЛО processCommand: \"" + text + "\"");
 
@@ -363,9 +359,7 @@ public class VoskAIProcessor {
         Log.d(TAG, "КОНЕЦ processCommand");
     }
 
-    /**
-     * Проверка, является ли команда командой CleverHome
-     */
+    //Проверка, является ли команда командой CleverHome
     private boolean isCleverHomeCommand(String text) {
         if (text == null) return false;
 
@@ -378,9 +372,7 @@ public class VoskAIProcessor {
                 lower.contains("cleverhome");
     }
 
-    /**
-     * Проверка содержит ли текст ключевые слова CleverHome
-     */
+    //Проверка содержит ли текст ключевые слова CleverHome
     private boolean containsCleverHomeKeywords(String text) {
         if (text == null) return false;
 
@@ -390,9 +382,7 @@ public class VoskAIProcessor {
                 lower.contains("clever");
     }
 
-    /**
-     * Обработка команд CleverHome
-     */
+    //Обработка команд CleverHome
     private void handleCleverHomeCommand(String text, SimpleCallback callback) {
         String lower = text.toLowerCase();
         JSONObject params = new JSONObject();
@@ -434,9 +424,7 @@ public class VoskAIProcessor {
         }
     }
 
-    /**
-     * Выполнение команды, определенной AI
-     */
+    //Выполнение команды, определенной AI
     private boolean executeCommand(TinyLLMProcessor.CommandResult result, SimpleCallback callback) {
         if (result == null || "unknown".equals(result.command)) {
             Log.w(TAG, "Неизвестная команда");
@@ -505,9 +493,7 @@ public class VoskAIProcessor {
         }
     }
 
-    /**
-     * Команды управления яркостью
-     */
+    //Команды управления яркостью
     private boolean executeBrightnessCommand(TinyLLMProcessor.CommandResult result, SimpleCallback callback) {
         if (result == null) {
             Log.e(TAG, "executeBrightnessCommand: result is null!");
@@ -643,9 +629,7 @@ public class VoskAIProcessor {
         }
     }
 
-    /**
-     * Команды управления громкостью (ИСПРАВЛЕННАЯ ВЕРСИЯ)
-     */
+    //Команды управления громкостью (ИСПРАВЛЕННАЯ ВЕРСИЯ)
     private boolean executeVolumeCommand(TinyLLMProcessor.CommandResult result, SimpleCallback callback) {
         String action = result.action;
         JSONObject params = result.params;
@@ -774,9 +758,7 @@ public class VoskAIProcessor {
         }
     }
 
-    /**
-     * Увеличить громкость всех 4 типов
-     */
+    //Увеличить громкость всех 4 типов
     private boolean increaseAllVolumes(int value, SimpleCallback callback) {
         try {
             boolean success = true;
@@ -852,9 +834,7 @@ public class VoskAIProcessor {
         }
     }
 
-    /**
-     * Уменьшить громкость всех 4 типов
-     */
+    //Уменьшить громкость всех 4 типов
     private boolean decreaseAllVolumes(int value, SimpleCallback callback) {
         try {
             boolean success = true;
@@ -924,7 +904,7 @@ public class VoskAIProcessor {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка уменьшения всех громкостей", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка при уменьшении громкости: " + e.getMessage());
+                callback.onCommandResult("Ошибка при уменьшении громкости: " + e.getMessage());
             }
             return false;
         }
@@ -936,7 +916,7 @@ public class VoskAIProcessor {
     private boolean muteAllVolumes(SimpleCallback callback) {
         try {
             boolean success = true;
-            StringBuilder resultBuilder = new StringBuilder("🔇 Выключение звука всех типов:\n");
+            StringBuilder resultBuilder = new StringBuilder("Выключение звука всех типов:\n");
 
             // Медиа
             try {
@@ -986,7 +966,7 @@ public class VoskAIProcessor {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка выключения всех звуков", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка при выключении звука: " + e.getMessage());
+                callback.onCommandResult("Ошибка при выключении звука: " + e.getMessage());
             }
             return false;
         }
@@ -998,7 +978,7 @@ public class VoskAIProcessor {
     private boolean unmuteAllVolumes(SimpleCallback callback) {
         try {
             boolean success = true;
-            StringBuilder resultBuilder = new StringBuilder("🔊 Включение звука всех типов:\n");
+            StringBuilder resultBuilder = new StringBuilder("Включение звука всех типов:\n");
 
             // Медиа
             try {
@@ -1048,7 +1028,7 @@ public class VoskAIProcessor {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка включения всех звуков", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка при включении звука: " + e.getMessage());
+                callback.onCommandResult("Ошибка при включении звука: " + e.getMessage());
             }
             return false;
         }
@@ -1180,7 +1160,7 @@ public class VoskAIProcessor {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка уменьшения громкости " + soundType, e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка при уменьшении громкости " + getSoundTypeName(soundType) + ": " + e.getMessage());
+                callback.onCommandResult("Ошибка при уменьшении громкости " + getSoundTypeName(soundType) + ": " + e.getMessage());
             }
             return false;
         }
@@ -1261,7 +1241,7 @@ public class VoskAIProcessor {
             }
 
             if (callback != null) {
-                String message = "🔔 Громкость уведомлений установлена на " + volume + "%: " + result;
+                String message = "Громкость уведомлений установлена на " + volume + "%: " + result;
                 callback.onCommandResult(message);
             }
 
@@ -1269,7 +1249,7 @@ public class VoskAIProcessor {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка безопасной установки уведомлений", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка при установке громкости уведомлений: " + e.getMessage());
+                callback.onCommandResult("Ошибка при установке громкости уведомлений: " + e.getMessage());
             }
             return false;
         }
@@ -1309,7 +1289,7 @@ public class VoskAIProcessor {
             }
 
             if (callback != null) {
-                String message = "🔊 Громкость " + typeName + " установлена на " + value + "%: " + result;
+                String message = "Громкость " + typeName + " установлена на " + value + "%: " + result;
                 callback.onCommandResult(message);
             }
 
@@ -1317,7 +1297,7 @@ public class VoskAIProcessor {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка установки громкости " + soundType, e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка при установке громкости " + getSoundTypeName(soundType) + ": " + e.getMessage());
+                callback.onCommandResult("Ошибка при установке громкости " + getSoundTypeName(soundType) + ": " + e.getMessage());
             }
             return false;
         }
@@ -1456,14 +1436,14 @@ public class VoskAIProcessor {
 
             Log.w(TAG, "Fallback не смог обработать команду: " + text);
             if (callback != null) {
-                callback.onCommandResult("❌ Команда не распознана: \"" + text + "\"");
+                callback.onCommandResult("Команда не распознана: \"" + text + "\"");
             }
             return false;
 
         } catch (Exception e) {
             Log.e(TAG, "Ошибка в fallback выполнении", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка обработки команды: " + e.getMessage());
+                callback.onCommandResult("Ошибка обработки команды: " + e.getMessage());
             }
             return false;
         }
@@ -1481,7 +1461,7 @@ public class VoskAIProcessor {
                         String.valueOf(value));
                 Log.d(TAG, "Яркость увеличена: " + result);
                 if (callback != null) {
-                    callback.onCommandResult("💡 Яркость увеличена на " + value + "%: " + result);
+                    callback.onCommandResult("Яркость увеличена на " + value + "%: " + result);
                 }
                 return !result.contains("Ошибка") && !result.contains("Нужно разрешение");
             } else if (lower.contains("уменьш") || lower.contains("меньше") || lower.contains("убав")) {
@@ -1491,7 +1471,7 @@ public class VoskAIProcessor {
                         String.valueOf(value));
                 Log.d(TAG, "Яркость уменьшена: " + result);
                 if (callback != null) {
-                    callback.onCommandResult("💡 Яркость уменьшена на " + value + "%: " + result);
+                    callback.onCommandResult("Яркость уменьшена на " + value + "%: " + result);
                 }
                 return !result.contains("Ошибка") && !result.contains("Нужно разрешение");
             } else if (lower.contains("макс") || lower.contains("максимум") || lower.contains("полную")) {
@@ -1499,7 +1479,7 @@ public class VoskAIProcessor {
                         BrightnessAPI.BrightnessCommand.MAX);
                 Log.d(TAG, "Яркость на максимум: " + result);
                 if (callback != null) {
-                    callback.onCommandResult("💡 Яркость установлена на максимум: " + result);
+                    callback.onCommandResult("Яркость установлена на максимум: " + result);
                 }
                 return !result.contains("Ошибка") && !result.contains("Нужно разрешение");
             } else if (lower.contains("мин") || lower.contains("минимум") || lower.contains("выключи")) {
@@ -1507,7 +1487,7 @@ public class VoskAIProcessor {
                         BrightnessAPI.BrightnessCommand.MIN);
                 Log.d(TAG, "Яркость на минимум: " + result);
                 if (callback != null) {
-                    callback.onCommandResult("💡 Яркость установлена на минимум: " + result);
+                    callback.onCommandResult("Яркость установлена на минимум: " + result);
                 }
                 return !result.contains("Ошибка") && !result.contains("Нужно разрешение");
             } else if (lower.contains("средн") || lower.contains("половин")) {
@@ -1515,7 +1495,7 @@ public class VoskAIProcessor {
                         BrightnessAPI.BrightnessCommand.MEDIUM);
                 Log.d(TAG, "Яркость средняя: " + result);
                 if (callback != null) {
-                    callback.onCommandResult("💡 Яркость установлена на средний уровень: " + result);
+                    callback.onCommandResult("Яркость установлена на средний уровень: " + result);
                 }
                 return !result.contains("Ошибка") && !result.contains("Нужно разрешение");
             }
@@ -1578,14 +1558,14 @@ public class VoskAIProcessor {
                 String result = WiFiAPI.executeCommand(WiFiAPI.WiFiCommand.ENABLE);
                 Log.d(TAG, "Wi-Fi включен: " + result);
                 if (callback != null) {
-                    callback.onCommandResult("📶 Wi-Fi включен: " + result);
+                    callback.onCommandResult("Wi-Fi включен: " + result);
                 }
                 return !result.contains("Ошибка");
             } else if (lower.contains("выключи") || lower.contains("отключи")) {
                 String result = WiFiAPI.executeCommand(WiFiAPI.WiFiCommand.DISABLE);
                 Log.d(TAG, "Wi-Fi выключен: " + result);
                 if (callback != null) {
-                    callback.onCommandResult("📶 Wi-Fi выключен: " + result);
+                    callback.onCommandResult("Wi-Fi выключен: " + result);
                 }
                 return !result.contains("Ошибка");
             } else if (lower.contains("статус") || lower.contains("состояние") ||
@@ -1593,14 +1573,14 @@ public class VoskAIProcessor {
                 String result = WiFiAPI.executeCommand(WiFiAPI.WiFiCommand.GET_STATUS);
                 Log.d(TAG, "Статус Wi-Fi: " + result);
                 if (callback != null) {
-                    callback.onCommandResult("📶 Статус Wi-Fi: " + result);
+                    callback.onCommandResult("Статус Wi-Fi: " + result);
                 }
                 return !result.contains("Ошибка");
             } else if (lower.contains("сканируй") || lower.contains("найди") || lower.contains("поиск")) {
                 String result = WiFiAPI.executeCommand(WiFiAPI.WiFiCommand.SCAN);
                 Log.d(TAG, "Сканирование Wi-Fi: " + result);
                 if (callback != null) {
-                    callback.onCommandResult("📶 Сканирование Wi-Fi: " + result);
+                    callback.onCommandResult("Сканирование Wi-Fi: " + result);
                 }
                 return !result.contains("Ошибка");
             }
@@ -1621,28 +1601,28 @@ public class VoskAIProcessor {
                 boolean success = launcher.launchAppByName("settings");
                 Log.d(TAG, "Открываю настройки: " + success);
                 if (callback != null) {
-                    callback.onCommandResult(success ? "🚀 Настройки открыты" : "❌ Не удалось открыть настройки");
+                    callback.onCommandResult(success ? "Настройки открыты" : "Не удалось открыть настройки");
                 }
                 return success;
             } else if (lower.contains("камер")) {
                 boolean success = launcher.launchAppByName("camera");
                 Log.d(TAG, "Открываю камеру: " + success);
                 if (callback != null) {
-                    callback.onCommandResult(success ? "🚀 Камера открыта" : "❌ Не удалось открыть камеру");
+                    callback.onCommandResult(success ? "Камера открыта" : "Не удалось открыть камеру");
                 }
                 return success;
             } else if (lower.contains("телефон") || lower.contains("звонк")) {
                 boolean success = launcher.launchAppByName("phone");
                 Log.d(TAG, "Открываю телефон: " + success);
                 if (callback != null) {
-                    callback.onCommandResult(success ? "🚀 Телефон открыт" : "❌ Не удалось открыть телефон");
+                    callback.onCommandResult(success ? "Телефон открыт" : "Не удалось открыть телефон");
                 }
                 return success;
             } else if (lower.contains("галере") || lower.contains("фото")) {
                 boolean success = launcher.launchAppByName("gallery");
                 Log.d(TAG, "Открываю галерею: " + success);
                 if (callback != null) {
-                    callback.onCommandResult(success ? "🚀 Галерея открыта" : "❌ Не удалось открыть галерею");
+                    callback.onCommandResult(success ? "Галерея открыта" : "Не удалось открыть галерею");
                 }
                 return success;
             }
@@ -1706,7 +1686,7 @@ public class VoskAIProcessor {
             }
 
             if (isCleverHomeCommand) {
-                Log.d(TAG, "✅ Определена команда CleverHome");
+                Log.d(TAG, "Определена команда CleverHome");
 
                 // Определяем действие
                 if (lower.contains("перезапуск") || lower.contains("рестарт") ||
@@ -1740,14 +1720,14 @@ public class VoskAIProcessor {
                     (lower.contains("устройство") || lower.contains("телефон") ||
                             lower.contains("система") || lower.contains("гаджет") ||
                             lower.contains("девайс"))) {
-                Log.d(TAG, "✅ Определена команда перезагрузки устройства");
+                Log.d(TAG, "Определена команда перезагрузки устройства");
                 return new TinyLLMProcessor.CommandResult("device", "reboot", params);
             }
 
             if ((lower.contains("выключи") || lower.contains("отключи")) &&
                     (lower.contains("устройство") || lower.contains("телефон") ||
                             lower.contains("система"))) {
-                Log.d(TAG, "✅ Определена команда выключения устройства");
+                Log.d(TAG, "Определена команда выключения устройства");
                 return new TinyLLMProcessor.CommandResult("device", "shutdown", params);
             }
 
@@ -1782,7 +1762,7 @@ public class VoskAIProcessor {
             Log.e(TAG, "Ошибка в простом парсере", e);
         }
 
-        Log.w(TAG, "❌ Не удалось распознать команду: \"" + text + "\"");
+        Log.w(TAG, "Не удалось распознать команду: \"" + text + "\"");
         return new TinyLLMProcessor.CommandResult("unknown", "", params);
     }
 
@@ -2119,14 +2099,14 @@ public class VoskAIProcessor {
                 String message = "Приложение '" + appName + "' успешно запущено";
                 Log.i(TAG, message);
                 if (callback != null) {
-                    callback.onCommandResult("🚀 " + message);
+                    callback.onCommandResult("" + message);
                 }
                 return true;
             } else {
                 Log.w(TAG, "Не удалось запустить приложение: " + appName);
                 boolean alternativeSuccess = tryAlternativeAppNames(appName, callback);
                 if (!alternativeSuccess && callback != null) {
-                    callback.onCommandResult("❌ Не удалось запустить приложение: " + appName);
+                    callback.onCommandResult("Не удалось запустить приложение: " + appName);
                 }
                 return alternativeSuccess;
             }
@@ -2189,7 +2169,7 @@ public class VoskAIProcessor {
             }
 
             if (success && callback != null) {
-                callback.onCommandResult("🚀 Запущено приложение: " + alternativeName);
+                callback.onCommandResult("Запущено приложение: " + alternativeName);
             }
             return success;
         } catch (Exception e) {
@@ -2246,31 +2226,31 @@ public class VoskAIProcessor {
         Log.i(TAG, "Системная команда: " + action);
 
         String message = "";
-        String emoji = "⚙️";
+        String emoji = "";
 
         switch (action.toLowerCase()) {
             case "reboot":
             case "перезагрузка":
-                message = "🔄 Запрошена перезагрузка системы";
+                message = "Запрошена перезагрузка системы";
                 Log.i(TAG, message);
                 break;
 
             case "sleep":
             case "сон":
             case "режим сна":
-                message = "💤 Запрошен режим сна";
+                message = "Запрошен режим сна";
                 Log.i(TAG, message);
                 break;
 
             case "wake":
             case "проснуться":
             case "разбудить":
-                message = "☀️ Запрошено пробуждение";
+                message = " Запрошено пробуждение";
                 Log.i(TAG, message);
                 break;
 
             default:
-                message = "❌ Неизвестная системная команда: " + action;
+                message = "Неизвестная системная команда: " + action;
                 if (callback != null) {
                     callback.onCommandResult(message);
                 }
@@ -2357,14 +2337,14 @@ public class VoskAIProcessor {
             }
 
             if (callback != null) {
-                String message = "🔇 Звук " + typeName + " выключен: " + result;
+                String message = "Звук " + typeName + " выключен: " + result;
                 callback.onCommandResult(message);
             }
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка выключения звука " + soundType, e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка выключения звука " + getSoundTypeName(soundType) + ": " + e.getMessage());
+                callback.onCommandResult("Ошибка выключения звука " + getSoundTypeName(soundType) + ": " + e.getMessage());
             }
             return false;
         }
@@ -2410,14 +2390,14 @@ public class VoskAIProcessor {
             }
 
             if (callback != null) {
-                String message = "🔊 Звук " + typeName + " включен: " + result;
+                String message = "Звук " + typeName + " включен: " + result;
                 callback.onCommandResult(message);
             }
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка включения звука " + soundType, e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка включения звука " + getSoundTypeName(soundType) + ": " + e.getMessage());
+                callback.onCommandResult("Ошибка включения звука " + getSoundTypeName(soundType) + ": " + e.getMessage());
             }
             return false;
         }
@@ -2598,14 +2578,14 @@ public class VoskAIProcessor {
                 default:
                     Log.w(TAG, "Неизвестное действие для CleverHome: " + action);
                     if (callback != null) {
-                        callback.onCommandResult("❌ Неизвестная команда для CleverHome: " + action);
+                        callback.onCommandResult("Неизвестная команда для CleverHome: " + action);
                     }
                     return false;
             }
         } catch (Exception e) {
             Log.e(TAG, "Ошибка выполнения команды CleverHome", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка управления CleverHome: " + e.getMessage());
+                callback.onCommandResult("Ошибка управления CleverHome: " + e.getMessage());
             }
             return false;
         }
@@ -2651,7 +2631,7 @@ public class VoskAIProcessor {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка выполнения команды устройства", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка управления устройством: " + e.getMessage());
+                callback.onCommandResult("Ошибка управления устройством: " + e.getMessage());
             }
             return false;
         }
@@ -2670,10 +2650,10 @@ public class VoskAIProcessor {
 
             if (callback != null) {
                 if (result.contains("Starting") || result.contains("Error") || result.isEmpty()) {
-                    callback.onCommandResult("🚀 Приложение CleverHome запускается");
+                    callback.onCommandResult("Приложение CleverHome запускается");
                     return true;
                 } else {
-                    callback.onCommandResult("✅ CleverHome запущен: " + result);
+                    callback.onCommandResult("CleverHome запущен: " + result);
                     return true;
                 }
             }
@@ -2681,7 +2661,7 @@ public class VoskAIProcessor {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка запуска CleverHome", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка запуска CleverHome: " + e.getMessage());
+                callback.onCommandResult("Ошибка запуска CleverHome: " + e.getMessage());
             }
             return false;
         }
@@ -2694,7 +2674,7 @@ public class VoskAIProcessor {
     private boolean restartCleverHomeApp(SimpleCallback callback) {
         try {
             if (callback != null) {
-                callback.onCommandResult("🔄 Начинаю перезапуск CleverHome...");
+                callback.onCommandResult("Начинаю перезапуск CleverHome...");
             }
 
             Log.i(TAG, "Начинаю перезапуск CleverHome");
@@ -2713,7 +2693,7 @@ public class VoskAIProcessor {
             Log.i(TAG, "Запуск CleverHome: " + launchResult);
 
             if (callback != null) {
-                callback.onCommandResult("✅ CleverHome успешно перезапущен");
+                callback.onCommandResult("CleverHome успешно перезапущен");
             }
             Log.i(TAG, "CleverHome успешно перезапущен");
             return true;
@@ -2721,7 +2701,7 @@ public class VoskAIProcessor {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка перезапуска CleverHome", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка перезапуска: " + e.getMessage());
+                callback.onCommandResult("Ошибка перезапуска: " + e.getMessage());
             }
             return false;
         }
@@ -2738,13 +2718,13 @@ public class VoskAIProcessor {
             Log.i(TAG, "Остановка CleverHome: " + result);
 
             if (callback != null) {
-                callback.onCommandResult("⏹️ Приложение CleverHome остановлено");
+                callback.onCommandResult("Приложение CleverHome остановлено");
             }
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка остановки CleverHome", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка остановки CleverHome: " + e.getMessage());
+                callback.onCommandResult("Ошибка остановки CleverHome: " + e.getMessage());
             }
             return false;
         }
@@ -2760,16 +2740,16 @@ public class VoskAIProcessor {
 
             if (callback != null) {
                 if (result.contains("pro.cleverlife.cleverroom")) {
-                    callback.onCommandResult("✅ CleverHome запущен и работает");
+                    callback.onCommandResult("CleverHome запущен и работает");
                 } else {
-                    callback.onCommandResult("⏸️ CleverHome не запущен");
+                    callback.onCommandResult("CleverHome не запущен");
                 }
             }
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Ошибка проверки статуса CleverHome", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка проверки статуса: " + e.getMessage());
+                callback.onCommandResult("Ошибка проверки статуса: " + e.getMessage());
             }
             return false;
         }
@@ -2782,7 +2762,7 @@ public class VoskAIProcessor {
         try {
             // Предупреждаем пользователя
             if (callback != null) {
-                callback.onCommandResult("⚠️ Устройство будет перезагружено через 5 секунд!");
+                callback.onCommandResult("Устройство будет перезагружено через 5 секунд!");
             }
 
             // Даем пользователю время отреагировать
@@ -2801,7 +2781,7 @@ public class VoskAIProcessor {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка подготовки к перезагрузке", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка перезагрузки устройства: " + e.getMessage());
+                callback.onCommandResult("Ошибка перезагрузки устройства: " + e.getMessage());
             }
             return false;
         }
@@ -2810,7 +2790,7 @@ public class VoskAIProcessor {
     private boolean shutdownDevice(SimpleCallback callback) {
         try {
             if (callback != null) {
-                callback.onCommandResult("⚠️ Устройство будет выключено через 5 секунд!");
+                callback.onCommandResult("Устройство будет выключено через 5 секунд!");
             }
 
             new Handler().postDelayed(() -> {
@@ -2828,7 +2808,7 @@ public class VoskAIProcessor {
         } catch (Exception e) {
             Log.e(TAG, "Ошибка подготовки к выключению", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка выключения устройства: " + e.getMessage());
+                callback.onCommandResult("Ошибка выключения устройства: " + e.getMessage());
             }
             return false;
         }
@@ -2842,14 +2822,14 @@ public class VoskAIProcessor {
             Log.i(TAG, "Режим сна: " + result);
 
             if (callback != null) {
-                callback.onCommandResult("💤 Устройство переходит в режим сна");
+                callback.onCommandResult("Устройство переходит в режим сна");
             }
             return true;
 
         } catch (Exception e) {
             Log.e(TAG, "Ошибка перевода в режим сна", e);
             if (callback != null) {
-                callback.onCommandResult("❌ Ошибка перевода в режим сна: " + e.getMessage());
+                callback.onCommandResult("Ошибка перевода в режим сна: " + e.getMessage());
             }
             return false;
         }
