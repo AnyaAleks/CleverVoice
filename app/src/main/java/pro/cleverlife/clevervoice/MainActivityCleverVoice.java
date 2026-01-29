@@ -1,7 +1,11 @@
 package pro.cleverlife.clevervoice;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -14,8 +18,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import org.json.JSONObject;
+
 import pro.cleverlife.clevervoice.AI.TinyLLMProcessor;
 import pro.cleverlife.clevervoice.AI.VoskAIProcessor;
+import pro.cleverlife.clevervoice.API.WiFiAPI;
 import pro.cleverlife.clevervoice.TestInterface.TestBrightnessActivity;
 import pro.cleverlife.clevervoice.TestInterface.TestSoundActivity;
 import pro.cleverlife.clevervoice.processor.CommandProcessor;
@@ -39,6 +46,9 @@ public class MainActivityCleverVoice extends AppCompatActivity {
     private boolean isListening = false;
     private StringBuilder logBuilder = new StringBuilder();
 
+    // Объявляем BroadcastReceiver как поле класса
+    private BroadcastReceiver wifiScanReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,36 +58,11 @@ public class MainActivityCleverVoice extends AppCompatActivity {
         aiProcessor = new VoskAIProcessor(this);
         tinyLLMProcessor = new TinyLLMProcessor(this);
 
-        // Загружаем модель в фоновом потоке
-        new Thread(() -> {
-            boolean initialized = tinyLLMProcessor.initialize();
-            runOnUiThread(() -> {
-                if (initialized) {
-                    addLog("✓ AI процессоры инициализированы");
-
-                    // ПРОВЕРЯЕМ, ЗАГРУЖЕНА ЛИ МОДЕЛЬ
-                    boolean aiLoaded = tinyLLMProcessor.isModelLoaded();
-                    addLog("AI модель: " + (aiLoaded ? "ЗАГРУЖЕНА " : "НЕ загружена"));
-
-                    if (aiLoaded) {
-                        addLog("TinyLLaMA будет исправлять ошибки распознавания");
-                    } else {
-                        addLog("⚠Будут использоваться только простые правила");
-
-                        // Тестовая команда для проверки
-                        addLog("Тестовая команда...");
-                        TinyLLMProcessor.CommandResult testResult =
-                                tinyLLMProcessor.understandCommand("яркость максимум");
-                        addLog("Результат: " + testResult.command + " -> " + testResult.action);
-                    }
-                } else {
-                    addLog("✗ Ошибка инициализации AI процессоров");
-                }
-            });
-        }).start();
-
         initViews();
         checkPermissions();
+
+        // Инициализируем BroadcastReceiver
+        initWifiScanReceiver();
     }
 
     private void initViews() {
@@ -86,7 +71,6 @@ public class MainActivityCleverVoice extends AppCompatActivity {
         startButton = findViewById(R.id.startButton);
         Button buttonTestBrightness = findViewById(R.id.buttonTestBrightness);
         Button buttonTestSound = findViewById(R.id.buttonTestSound);
-
         startButton.setOnClickListener(v -> toggleListening());
 
         // Обработчик для перехода в тест яркости
@@ -107,8 +91,127 @@ public class MainActivityCleverVoice extends AppCompatActivity {
         logText.setText("Инициализация системы...\n");
     }
 
+    private void initWifiScanReceiver() {
+        wifiScanReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if ("WIFI_SCAN_RESULTS".equals(intent.getAction())) {
+                    int count = intent.getIntExtra("count", 0);
+                    addLog("📡 Сканирование завершено! Найдено сетей: " + count);
+
+                    if (count > 0) {
+                        String net1 = intent.getStringExtra("network1");
+                        String net2 = intent.getStringExtra("network2");
+                        String net3 = intent.getStringExtra("network3");
+
+                        if (net1 != null) addLog("  1. " + net1);
+                        if (net2 != null) addLog("  2. " + net2);
+                        if (net3 != null) addLog("  3. " + net3);
+
+                        if (count > 3) {
+                            addLog("  ... и еще " + (count - 3) + " сетей");
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    private void testWiFiCommands() {
+        addLog("Запуск теста WiFi команд...");
+
+        if (!WiFiAPI.isInitialized()) {
+            addLog("WiFiAPI не инициализирован!");
+            return;
+        }
+
+        new Thread(() -> {
+            try {
+                // 1. Проверяем статус WiFi
+                runOnUiThread(() -> addLog("1. Проверяем статус WiFi..."));
+                String status = WiFiAPI.executeCommand(WiFiAPI.WiFiCommand.GET_STATUS);
+                String finalStatus = status;
+                runOnUiThread(() -> addLog("   Результат: " + finalStatus));
+
+                Thread.sleep(1000);
+
+                // 2. Проверяем разрешение на геолокацию
+                runOnUiThread(() -> addLog("2. Проверяем разрешение на геолокацию..."));
+                String permission = WiFiAPI.executeCommand(WiFiAPI.WiFiCommand.CHECK_LOCATION_PERMISSION);
+                runOnUiThread(() -> addLog("   Результат: " + permission));
+
+                Thread.sleep(1000);
+
+                // 3. Включаем WiFi (если есть root)
+                if (WiFiAPI.getWiFiService().hasRootAccess()) {
+                    runOnUiThread(() -> addLog("3. Пытаемся включить WiFi..."));
+                    String enableResult = WiFiAPI.executeCommand(WiFiAPI.WiFiCommand.ENABLE);
+                    runOnUiThread(() -> addLog("   Результат: " + enableResult));
+
+                    Thread.sleep(2000);
+
+                    // 4. Проверяем статус после включения
+                    runOnUiThread(() -> addLog("4. Проверяем статус после включения..."));
+                    status = WiFiAPI.executeCommand(WiFiAPI.WiFiCommand.GET_STATUS);
+                    String finalStatus1 = status;
+                    runOnUiThread(() -> addLog("   Результат: " + finalStatus1));
+
+                    Thread.sleep(1000);
+                }
+
+                // 5. Тестируем сканирование
+                runOnUiThread(() -> addLog("5. Тестируем сканирование сетей..."));
+                String scanResult = WiFiAPI.executeCommand(WiFiAPI.WiFiCommand.SCAN_WITH_RESULTS);
+                runOnUiThread(() -> addLog("   Результат: " + scanResult));
+
+                runOnUiThread(() -> {
+                    addLog("=== ТЕСТ WiFi ЗАВЕРШЕН ===");
+                    Toast.makeText(MainActivityCleverVoice.this, "Тест WiFi завершен", Toast.LENGTH_SHORT).show();
+                });
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                runOnUiThread(() -> addLog("Тест прерван"));
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    addLog("Ошибка теста WiFi: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
+    }
+
+    private void testWiFiScan() {
+        new Thread(() -> {
+            try {
+                if (!WiFiAPI.isInitialized()) {
+                    runOnUiThread(() -> addLog("WiFiAPI не инициализирован"));
+                    return;
+                }
+
+                // Метод 1: Стандартное сканирование
+                runOnUiThread(() -> addLog("1. Стандартное сканирование..."));
+                String scanResult1 = WiFiAPI.executeCommand(WiFiAPI.WiFiCommand.SCAN_WITH_RESULTS);
+                runOnUiThread(() -> addLog(scanResult1));
+
+                Thread.sleep(1000);
+
+                // Метод 2: Root сканирование (если есть root)
+                if (WiFiAPI.getWiFiService().hasRootAccess()) {
+                    runOnUiThread(() -> addLog("\n2. Root сканирование..."));
+                    String scanResult2 = WiFiAPI.executeCommand(WiFiAPI.WiFiCommand.SCAN_ROOT);
+                    runOnUiThread(() -> addLog(scanResult2));
+                }
+
+            } catch (Exception e) {
+                runOnUiThread(() -> addLog("Ошибка теста сканирования: " + e.getMessage()));
+            }
+        }).start();
+    }
+
     private void checkPermissions() {
         addLog("Проверка разрешений...");
+
         if (PermissionManager.hasAllRequiredPermissions(this)) {
             addLog("Все разрешения предоставлены");
             initServices();
@@ -121,6 +224,15 @@ public class MainActivityCleverVoice extends AppCompatActivity {
 
     private void initServices() {
         addLog("Инициализация сервисов...");
+
+        // ИНИЦИАЛИЗАЦИЯ WiFiAPI
+        WiFiAPI.initialize(this);
+        if (WiFiAPI.isInitialized()) {
+            addLog("WiFiAPI успешно инициализирован");
+        } else {
+            addLog("WiFiAPI не инициализирован!");
+        }
+
         voiceService = new VoiceRecognitionService(this);
         commandProcessor = new CommandProcessor(this);
 
@@ -133,6 +245,28 @@ public class MainActivityCleverVoice extends AppCompatActivity {
         } else {
             addLog("Менеджер звуков не смог загрузить звуковые файлы");
         }
+
+        // Загружаем модель TinyLLaMA в фоновом потоке
+        new Thread(() -> {
+            boolean initialized = tinyLLMProcessor.initialize();
+            runOnUiThread(() -> {
+                if (initialized) {
+                    addLog("AI процессоры инициализированы");
+
+                    // ПРОВЕРЯЕМ, ЗАГРУЖЕНА ЛИ МОДЕЛЬ
+                    boolean aiLoaded = tinyLLMProcessor.isModelLoaded();
+                    addLog("AI модель: " + (aiLoaded ? "ЗАГРУЖЕНА" : "НЕ загружена"));
+
+                    if (aiLoaded) {
+                        addLog("TinyLLaMA будет исправлять ошибки распознавания");
+                    } else {
+                        addLog("Будут использоваться только простые правила");
+                    }
+                } else {
+                    addLog("Ошибка инициализации AI процессоров");
+                }
+            });
+        }).start();
 
         setupVoiceRecognition();
     }
@@ -157,6 +291,7 @@ public class MainActivityCleverVoice extends AppCompatActivity {
             } else {
                 addLog("Не все разрешения предоставлены");
                 statusText.setText("Не все разрешения предоставлены");
+
                 Toast.makeText(this, "Для работы приложения нужны все разрешения", Toast.LENGTH_LONG).show();
                 startButton.setEnabled(false);
             }
@@ -175,7 +310,7 @@ public class MainActivityCleverVoice extends AppCompatActivity {
                     if (soundManager.isInitialized()) {
                         soundManager.playActivationSound();
                     }
-                    startCommandTimer(); // Запускаем таймер
+                    startCommandTimer();
                 });
             }
 
@@ -183,7 +318,6 @@ public class MainActivityCleverVoice extends AppCompatActivity {
             public void onCommandReceived(String command) {
                 runOnUiThread(() -> {
                     addLog(">>> КОМАНДА: \"" + command + "\"");
-                    // Останавливаем таймер при получении команды
                     if (commandTimer != null) {
                         commandTimer.cancel();
                     }
@@ -200,12 +334,10 @@ public class MainActivityCleverVoice extends AppCompatActivity {
                         soundManager.playErrorSound();
                     }
 
-                    // Останавливаем таймер при ошибке
                     if (commandTimer != null) {
                         commandTimer.cancel();
                     }
 
-                    // Автоматически перезапускаем прослушивание после ошибки
                     if (isListening) {
                         addLog("Перезапуск прослушивания...");
                         voiceService.startListening();
@@ -216,7 +348,7 @@ public class MainActivityCleverVoice extends AppCompatActivity {
             @Override
             public void onInitialized() {
                 runOnUiThread(() -> {
-                    addLog("+ Система голосового распознавания готова");
+                    addLog("Система голосового распознавания готова");
                     statusText.setText("Система готова");
                     startButton.setEnabled(true);
                     startButton.setText("Запустить прослушивание");
@@ -234,12 +366,12 @@ public class MainActivityCleverVoice extends AppCompatActivity {
 
             @Override
             public void onSpeechDetected() {
-                // Оставляем пустым или добавим минимальную логику
+
             }
 
             @Override
             public void onSilenceDetected() {
-                // Оставляем пустым
+
             }
         });
     }
@@ -269,7 +401,7 @@ public class MainActivityCleverVoice extends AppCompatActivity {
 
     private void startListening() {
         if (voiceService != null) {
-            addLog("=== ЗАПУСК ПРОСЛУШИВАНИАЯ ===");
+            addLog("=== ЗАПУСК ПРОСЛУШИВАНИЯ ===");
             addLog("• Микрофон активирован");
             addLog("• Ожидание активационного слова: 'Клевер'");
             addLog("• Речь до активации игнорируется");
@@ -292,7 +424,6 @@ public class MainActivityCleverVoice extends AppCompatActivity {
                 String seconds = String.valueOf(millisUntilFinished / 1000);
                 statusText.setText(">< Команда: " + seconds + "с");
 
-                // Обновляем лог каждые 5 секунд
                 if (millisUntilFinished % 5000 == 0) {
                     addLog(">< Осталось " + seconds + " секунд...");
                 }
@@ -305,12 +436,10 @@ public class MainActivityCleverVoice extends AppCompatActivity {
                     soundManager.playErrorSound();
                 }
 
-                // Сбрасываем активацию в сервисе
                 if (voiceService != null) {
                     voiceService.resetActivation();
                 }
 
-                // Возвращаемся в режим ожидания активации
                 if (isListening) {
                     addLog("Ожидание активационного слова...");
                     voiceService.startListening();
@@ -323,52 +452,138 @@ public class MainActivityCleverVoice extends AppCompatActivity {
         addLog("-><- Обработка команды: \"" + command + "\"");
         statusText.setText("Обрабатываю: " + command);
 
-        // Отменяем таймер команды
         if (commandTimer != null) {
             commandTimer.cancel();
         }
 
-        // ИСПРАВЛЕНИЕ: Используем VoskAIProcessor вместо TinyLLMProcessor
-        if (aiProcessor != null) {
-            addLog("Передаю команду в VoskAIProcessor");
-
-            // Создаем колбэк для обработки результата
-            VoskAIProcessor.SimpleCallback callback = new VoskAIProcessor.SimpleCallback() {
-                @Override
-                public void onCommandProcessed(boolean success) {
-                    runOnUiThread(() -> {
-                        if (success) {
-                            addLog("✅ Команда успешно выполнена через VoskAIProcessor");
-                            if (soundManager.isInitialized()) {
-                                soundManager.playSuccessSound();
-                            }
-                        } else {
-                            addLog("Не удалось выполнить команду через VoskAIProcessor");
-                            if (soundManager.isInitialized()) {
-                                soundManager.playErrorSound();
-                            }
-                        }
-
-                        // Возвращаемся в режим ожидания активации
-                        if (isListening) {
-                            addLog("Ожидание новой активации...");
-                            statusText.setText("Скажите 'Клевер' для новой команды...");
-                            voiceService.startListening();
-                        }
-                    });
-                }
-            };
-
-            // Вызываем обработку команды через VoskAIProcessor
-            aiProcessor.processRecognizedText(command, callback);
+        // Проверяем, является ли команда WiFi командой
+        if (isWiFiCommand(command)) {
+            addLog("Обнаружена WiFi команда");
+            processWiFiCommand(command);
         } else {
-            addLog("VoskAIProcessor не инициализирован!");
-            // Fallback на старый метод
-            useTinyLLMProcessorFallback(command);
+            if (aiProcessor != null) {
+                aiProcessor.processRecognizedText(command, new VoskAIProcessor.SimpleCallback() {
+                    @Override
+                    public void onCommandProcessed(boolean success) {
+                        handleCommandResult(success);
+                    }
+
+                    @Override
+                    public void onAIResult(String cmd, String action, JSONObject params, boolean usedAI) {
+                        handleAIResult(cmd, action, params, usedAI);
+                    }
+
+                    @Override
+                    public void onCommandResult(String resultMessage) {
+                        handleCommandResultMessage(resultMessage);
+                    }
+                });
+            } else {
+                addLog("VoskAIProcessor не инициализирован!");
+                useTinyLLMProcessorFallback(command);
+            }
         }
     }
 
-    // Старый метод для совместимости
+    private boolean isWiFiCommand(String command) {
+        if (command == null) return false;
+
+        String lowerCommand = command.toLowerCase();
+        return lowerCommand.contains("wifi") ||
+                lowerCommand.contains("вайфай") ||
+                lowerCommand.contains("wi-fi") ||
+                lowerCommand.contains("беспроводн") ||
+                lowerCommand.contains("интернет") ||
+                lowerCommand.contains("сеть") ||
+                lowerCommand.contains("сканировать") ||
+                lowerCommand.contains("подключить") ||
+                lowerCommand.contains("отключить") ||
+                lowerCommand.contains("включить") ||
+                lowerCommand.contains("выключить");
+    }
+
+    private void processWiFiCommand(String command) {
+        addLog("Обработка через WiFiAPI...");
+
+        try {
+            String result = WiFiAPI.handleVoiceCommand(command);
+            addLog("Результат WiFi команды: " + result);
+
+            if (result != null && !result.contains("Ошибка") && !result.contains("Неизвестная")) {
+                if (soundManager.isInitialized()) {
+                    soundManager.playSuccessSound();
+                }
+                addLog("WiFi команда выполнена успешно");
+            } else {
+                if (soundManager.isInitialized()) {
+                    soundManager.playErrorSound();
+                }
+                addLog("WiFi команда не выполнена");
+            }
+
+        } catch (Exception e) {
+            addLog("Ошибка обработки WiFi команды: " + e.getMessage());
+            if (soundManager.isInitialized()) {
+                soundManager.playErrorSound();
+            }
+        }
+
+        if (isListening) {
+            addLog("Ожидание новой активации...");
+            statusText.setText("Скажите 'Клевер' для новой команды...");
+            if (voiceService != null) {
+                voiceService.startListening();
+            }
+        }
+    }
+
+    private void handleCommandResult(boolean success) {
+        runOnUiThread(() -> {
+            if (success) {
+                addLog("Команда успешно выполнена");
+                if (soundManager.isInitialized()) {
+                    soundManager.playSuccessSound();
+                }
+            } else {
+                addLog("Не удалось выполнить команду");
+                if (soundManager.isInitialized()) {
+                    soundManager.playErrorSound();
+                }
+            }
+            returnToListeningMode();
+        });
+    }
+
+    private void handleAIResult(String command, String action, JSONObject params, boolean usedAI) {
+        runOnUiThread(() -> {
+            addLog("AI АНАЛИЗ:");
+            addLog("   Команда: " + command);
+            addLog("   Действие: " + (action != null && !action.isEmpty() ? action : "не определено"));
+            addLog("   Параметры: " + formatParamsForDisplay(params));
+            addLog("   Использован AI: " + (usedAI ? "Да" : "Нет (правила)"));
+            addLog("   " + getCommandEmoji(command) + " Тип: " + getCommandTypeDescription(command));
+        });
+    }
+
+    private void handleCommandResultMessage(String resultMessage) {
+        runOnUiThread(() -> {
+            addLog("РЕЗУЛЬТАТ:");
+            if (resultMessage != null && !resultMessage.isEmpty()) {
+                addLog("   " + resultMessage);
+            }
+        });
+    }
+
+    private void returnToListeningMode() {
+        if (isListening) {
+            addLog("Ожидание новой активации...");
+            statusText.setText("Скажите 'Клевер' для новой команды...");
+            if (voiceService != null) {
+                voiceService.startListening();
+            }
+        }
+    }
+
     private void useTinyLLMProcessorFallback(String command) {
         new Thread(() -> {
             try {
@@ -382,7 +597,6 @@ public class MainActivityCleverVoice extends AppCompatActivity {
                         }
                         addLog(logMsg);
 
-                        // Воспроизводим звук
                         if (soundManager.isInitialized()) {
                             if (!"unknown".equals(result.command)) {
                                 soundManager.playSuccessSound();
@@ -397,13 +611,7 @@ public class MainActivityCleverVoice extends AppCompatActivity {
                             soundManager.playErrorSound();
                         }
                     }
-
-                    // Возвращаемся в режим ожидания активации
-                    if (isListening) {
-                        addLog("Ожидание новой активации...");
-                        statusText.setText("Скажите 'Клевер' для новой команды...");
-                        voiceService.startListening();
-                    }
+                    returnToListeningMode();
                 });
             } catch (Exception e) {
                 runOnUiThread(() -> {
@@ -412,20 +620,48 @@ public class MainActivityCleverVoice extends AppCompatActivity {
                     if (soundManager.isInitialized()) {
                         soundManager.playErrorSound();
                     }
+                    returnToListeningMode();
                 });
             }
         }).start();
     }
 
+    private String getCommandEmoji(String command) {
+        if (command == null) return "";
+
+        switch (command.toLowerCase()) {
+            case "wifi": return "";
+            case "brightness": return "";
+            case "volume": return "";
+            case "launch": return "";
+            case "system": return "";
+            case "media": return "";
+            default: return "";
+        }
+    }
+
+    private String getCommandTypeDescription(String command) {
+        if (command == null) return "Неизвестная команда";
+
+        switch (command.toLowerCase()) {
+            case "wifi": return "Управление WiFi";
+            case "brightness": return "Управление яркостью";
+            case "volume": return "Управление звуком";
+            case "launch": return "Запуск приложения";
+            case "system": return "Системная команда";
+            case "media": return "Медиа команда";
+            default: return command;
+        }
+    }
+
     private void addLog(String message) {
         runOnUiThread(() -> {
-            // Добавляем сообщение в StringBuilder
-            logBuilder.append(message).append("\n");
+            String timestamp = new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date());
+            String logMessage = "[" + timestamp + "] " + message;
 
-            // Обновляем TextView
+            logBuilder.append(logMessage).append("\n");
             logText.setText(logBuilder.toString());
 
-            // Правильная прокрутка вниз
             if (logText.getLayout() != null) {
                 int scrollAmount = logText.getLayout().getLineTop(logText.getLineCount()) - logText.getHeight();
                 if (scrollAmount > 0) {
@@ -437,9 +673,17 @@ public class MainActivityCleverVoice extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Регистрируем BroadcastReceiver
+        if (wifiScanReceiver != null) {
+            IntentFilter filter = new IntentFilter("WIFI_SCAN_RESULTS");
+            registerReceiver(wifiScanReceiver, filter);
+        }
+
         // При возвращении в приложение перезапускаем прослушивание если оно было активно
         if (isListening && voiceService != null) {
             addLog("Возобновление прослушивания...");
@@ -450,6 +694,16 @@ public class MainActivityCleverVoice extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
+        // Отменяем регистрацию BroadcastReceiver
+        if (wifiScanReceiver != null) {
+            try {
+                unregisterReceiver(wifiScanReceiver);
+            } catch (IllegalArgumentException e) {
+                // Receiver не был зарегистрирован
+            }
+        }
+
         // При сворачивании приложения останавливаем прослушивание
         if (voiceService != null) {
             addLog("Приостановка прослушивания...");
@@ -461,7 +715,14 @@ public class MainActivityCleverVoice extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        // Освободите ресурсы TinyLLaMA
+        if (wifiScanReceiver != null) {
+            try {
+                unregisterReceiver(wifiScanReceiver);
+            } catch (IllegalArgumentException e) {
+                // Игнорируем
+            }
+        }
+
         if (tinyLLMProcessor != null) {
             tinyLLMProcessor.release();
         }
@@ -479,5 +740,29 @@ public class MainActivityCleverVoice extends AppCompatActivity {
             commandTimer.cancel();
         }
         addLog("Приложение закрыто");
+    }
+
+    private String formatParamsForDisplay(JSONObject params) {
+        if (params == null || params.length() == 0) {
+            return "нет";
+        }
+
+        try {
+            StringBuilder sb = new StringBuilder();
+            java.util.Iterator<String> keys = params.keys();
+
+            while (keys.hasNext()) {
+                String key = keys.next();
+                String value = params.optString(key, "");
+                sb.append(key).append("=").append(value);
+                if (keys.hasNext()) {
+                    sb.append(", ");
+                }
+            }
+
+            return sb.toString();
+        } catch (Exception e) {
+            return params.toString();
+        }
     }
 }

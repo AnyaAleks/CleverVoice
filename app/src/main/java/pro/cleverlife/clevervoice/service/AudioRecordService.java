@@ -35,7 +35,7 @@ public class AudioRecordService {
             int actualBufferSize = Math.max(BUFFER_SIZE, minBufferSize);
 
             audioRecord = new AudioRecord(
-                    MediaRecorder.AudioSource.VOICE_RECOGNITION, // Используем оптимизированный источник для распознавания
+                    MediaRecorder.AudioSource.VOICE_RECOGNITION,
                     SAMPLE_RATE,
                     CHANNEL_CONFIG,
                     AUDIO_FORMAT,
@@ -75,7 +75,7 @@ public class AudioRecordService {
                         audioCallback.onAudioBuffer(buffer);
                     }
 
-                    // Небольшая пауза для снижения нагрузки на CPU
+                    //Снижение нагрузки
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {

@@ -20,16 +20,13 @@ public class ServiceReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        //wifiService.startScan();
 
        // Проверка состояния Wi-Fi
        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
        if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI && networkInfo.isConnected()) {
-           //Toast.makeText(context, "Wi-Fi включился", Toast.LENGTH_SHORT).show();
            if (wifiService != null) {
-               //wifiService.requestLocationPermission();
                wifiService.startScan(context);
            }
        }
@@ -39,9 +36,7 @@ public class ServiceReceiver extends BroadcastReceiver {
        boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
        if (isGpsEnabled) {
-           //Toast.makeText(context, "GPS включился", Toast.LENGTH_SHORT).show();
            if (wifiService != null) {
-               //wifiService.requestLocationPermission();
                wifiService.startScan(context);
            }
        }

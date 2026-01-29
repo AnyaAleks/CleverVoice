@@ -38,16 +38,22 @@
         android:backgroundTint="#4CAF50"
         android:textColor="#FFFFFF" />
 
-    <TextView
-        android:id="@+id/logText"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="Лог команд будет здесь..."
         android:scrollbars="vertical"
         android:scrollbarStyle="insideInset"
         android:isScrollContainer="true"
-        android:maxLines="100"
-        android:verticalScrollbarPosition="right"/>
+        android:fillViewport="true">
 
+        <TextView
+            android:id="@+id/logText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Лог команд будет здесь..."
+            android:maxLines="1000"
+            android:textIsSelectable="true"
+            android:padding="4dp"/>
+    </ScrollView>
 </LinearLayout>

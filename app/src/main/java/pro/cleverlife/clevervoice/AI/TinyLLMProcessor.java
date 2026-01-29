@@ -29,26 +29,51 @@ public class TinyLLMProcessor {
         put("телевизора", "медиа");
         put("яркость нами", "яркость на минимум");
         put("громкость нами", "громкость на минимум");
-        put("клевер", ""); // Удаляем активационное слово
-        put("ливер", "");  // Ошибка распознавания "клевер"
+        put("клевер", "");
+        put("ливер", "");
         put("на максимум", "максимум");
         put("на минимум", "минимум");
         put("звук у", "звук");
         put("звук о", "звук");
+        put("статус сети", "статус вай фай");
+        put("сеть", "вай фай");
+        put("инет", "интернет");
+        put("вайфай", "вай фай");
+        put("wi fi", "wifi");
     }};
 
     // Наборы ключевых слов для распознавания команд
     private static final String[] BRIGHTNESS_KEYWORDS = {"яркость", "свет", "подсветка", "экран", "дисплей"};
     private static final String[] VOLUME_KEYWORDS = {"звук", "громкость", "медиа", "аудио", "будильник", "уведомление", "звонок"};
-    private static final String[] WIFI_KEYWORDS = {"wifi", "вайфай", "интернет", "сеть"};
-    private static final String[] LAUNCH_KEYWORDS = {"открой", "запусти", "приложение", "программу"};
+    private static final String[] WIFI_KEYWORDS = {
+            "wifi", "вайфай", "интернет", "сеть", "вай фай", "вай-фай",
+            "wi-fi", "wi fi", "беспроводная сеть", "беспроводная",
+            "инет", "wi", "сканировать", "сканирование", "сканируй",
+            "список", "показать", "доступные", "сетей", "поиск"
+    };
+    private static final String[] LAUNCH_KEYWORDS = {
+            "открой", "запусти", "приложение", "программу", "открыть"
+    };
     private static final String[] SYSTEM_KEYWORDS = {"система", "перезагрузка", "сон", "пробуждение"};
     private static final String[] MEDIA_KEYWORDS = {"медиа", "музыка", "видео", "плеер"};
+    private static final String[] CLEVERHOME_KEYWORDS = {
+            "клевер", "clever", "умный дом", "умныйдом", "cleverhome", "клевер хоум",
+            "клеверхом", "умный голос", "голосовой помощник", "клевер рум",
+            "клеверхум", "кливер", "клевер приложение", "приложение клевер",
+            "запусти клевер", "открой клевер", "включи клевер"
+    };
+    private static final String[] APP_MANAGEMENT_KEYWORDS = {
+            "перезапуск", "рестарт", "перезагрузи", "запусти", "открой", "останови", "закрой"
+    };
+    private static final String[] DEVICE_CONTROL_KEYWORDS = {
+            "устройство", "телефон", "система", "андроид", "перезагрузка",
+            "выключение", "девайс", "гаджет", "аппарат", "смартфон"
+    };
 
     // Имитация нативных методов
     public long initLlama(String modelPath) {
         Log.i(TAG, "Инициализация AI в Java-режиме");
-        return 1; // Возвращаем ненулевое значение для активации режима
+        return 1; //Возврат ненулевого значение для активации режима
     }
 
     public String generateResponse(long ctx, String prompt) {
@@ -69,11 +94,10 @@ public class TinyLLMProcessor {
         try {
             Log.i(TAG, "Инициализация AI процессора...");
 
-            // ВСЕГДА включаем AI режим для исправления ошибок распознавания
             useRealModel = true;
-            llamaContext = initLlama(""); // Инициализируем в Java-режиме
+            llamaContext = initLlama(""); //Инициализация в Java-режиме
 
-            // Проверяем наличие модели
+            //Проверка наличии модели
             File modelFile = checkForModel();
             if (modelFile != null && modelFile.exists()) {
                 Log.i(TAG, "Найдена модель GGUF: " + modelFile.getName() +
@@ -87,7 +111,7 @@ public class TinyLLMProcessor {
 
         } catch (Exception e) {
             Log.e(TAG, "Ошибка инициализации AI", e);
-            useRealModel = true; // Все равно включаем режим исправлений
+            useRealModel = true;
             return true;
         }
     }
@@ -123,25 +147,25 @@ public class TinyLLMProcessor {
         Log.i(TAG, "Обработка команды: \"" + originalText + "\"");
 
         try {
-            // 1. Используем AI-логику для понимания команды
+            //1. Используется AI-логика для понимания команды
             Log.d(TAG, "Использую AI-логику для обработки команды");
 
-            // Создаем AI-промпт
+            //Создание AI-промпт
             String prompt = createAIPrompt(originalText);
             Log.d(TAG, "Промпт для анализа: " + prompt.substring(0, Math.min(80, prompt.length())) + "...");
 
-            // Получаем AI-ответ
+            //Получение AI-ответа
             String aiResponse = generateResponse(llamaContext, prompt);
             Log.d(TAG, "AI-ответ: " + aiResponse);
 
-            // Парсим ответ
+            //Парсинг ответа
             CommandResult aiResult = parseAIResponse(aiResponse);
             if (aiResult != null && !"unknown".equals(aiResult.command)) {
                 Log.d(TAG, "AI распознал: " + aiResult.command + " -> " + aiResult.action);
                 return aiResult;
             }
 
-            // 2. Если AI не распознал, используем интеллектуальный fallback
+            //2. Если AI не распознал, используется интеллектуальный fallback
             Log.d(TAG, "AI не уверен, использую интеллектуальный анализ");
             return intelligentUnderstanding(originalText);
 
@@ -180,13 +204,13 @@ public class TinyLLMProcessor {
 
         Log.d(TAG, "Анализирую команду: \"" + userCommand + "\"");
 
-        // Исправляем ошибки распознавания
+        //Исправление ошибок распознавания
         String corrected = correctSpeechErrorsAI(userCommand);
         if (!corrected.equals(userCommand)) {
             Log.d(TAG, "Исправлено: \"" + userCommand + "\" → \"" + corrected + "\"");
         }
 
-        // Анализируем исправленную команду
+        //Анализ исправленной команды
         return analyzeCommandWithAI(corrected);
     }
 
@@ -230,7 +254,7 @@ public class TinyLLMProcessor {
             }
         }
 
-        // Дополнительные интеллектуальные исправления
+        //Дополнительные интеллектуальные исправления
         if (lower.contains("яркость") && lower.contains("на") && lower.contains("макс")) {
             lower = lower.replace("на макс", "максимум");
         }
@@ -245,7 +269,7 @@ public class TinyLLMProcessor {
     private String analyzeCommandWithAI(String command) {
         String lower = command.toLowerCase().trim();
 
-        // Определяем тип команды
+        //Определение типа команды
         String commandType = "unknown";
         String action = "";
         JSONObject params = new JSONObject();
@@ -273,11 +297,12 @@ public class TinyLLMProcessor {
                     action = "get_info";
                 }
             }
+
             // Звук
             else if (containsAny(lower, VOLUME_KEYWORDS)) {
                 commandType = "volume";
 
-                // Определяем тип звука
+                //Тип звука
                 if (lower.contains("будильник")) {
                     params.put("type", "alarm");
                 } else if (lower.contains("уведомл")) {
@@ -307,21 +332,15 @@ public class TinyLLMProcessor {
                     action = "get_info";
                 }
             }
+
             // Wi-Fi
             else if (containsAny(lower, WIFI_KEYWORDS)) {
-                commandType = "wifi";
-                if (lower.contains("включи")) {
-                    action = "enable";
-                } else if (lower.contains("выключи")) {
-                    action = "disable";
-                } else if (lower.contains("статус") || lower.contains("состояние")) {
-                    action = "status";
-                } else if (lower.contains("сканируй") || lower.contains("найди")) {
-                    action = "scan";
-                } else {
-                    action = "status";
-                }
+
+                CommandResult wifiResult = analyzeWiFiCommand(command);
+                return String.format("{\"command\":\"%s\",\"action\":\"%s\",\"params\":%s}",
+                        wifiResult.command, wifiResult.action, wifiResult.params.toString());
             }
+
             // Запуск приложений
             else if (containsAny(lower, LAUNCH_KEYWORDS)) {
                 commandType = "launch";
@@ -339,7 +358,7 @@ public class TinyLLMProcessor {
                 }
             }
 
-            // Формируем JSON ответ
+            // Формирование JSON ответа
             if (!"unknown".equals(commandType)) {
                 return String.format("{\"command\":\"%s\",\"action\":\"%s\",\"params\":%s}",
                         commandType, action, params.toString());
@@ -354,7 +373,7 @@ public class TinyLLMProcessor {
 
     private CommandResult parseAIResponse(String aiResponse) {
         try {
-            // Ищем JSON в ответе
+            // Поиск JSON в ответе
             String jsonStr = aiResponse.trim();
             int start = jsonStr.indexOf("{");
             int end = jsonStr.lastIndexOf("}");
@@ -385,6 +404,15 @@ public class TinyLLMProcessor {
 
     private CommandResult intelligentUnderstanding(String text) {
         String corrected = correctSpeechErrorsAI(text);
+
+        // Специальная обработка для WiFi команд
+        if (containsAny(corrected, WIFI_KEYWORDS)) {
+            CommandResult wifiResult = analyzeWiFiCommand(corrected);
+            if (!"unknown".equals(wifiResult.command)) {
+                Log.d(TAG, "Интеллектуальный анализ определил WiFi команду: " + wifiResult.action);
+                return wifiResult;
+            }
+        }
         return analyzeCommand(corrected);
     }
 
@@ -443,25 +471,66 @@ public class TinyLLMProcessor {
 
             // Wi-Fi
             if (containsAny(lower, WIFI_KEYWORDS)) {
-                if (lower.contains("включи")) {
-                    return new CommandResult("wifi", "enable", params);
-                } else if (lower.contains("выключи")) {
-                    return new CommandResult("wifi", "disable", params);
-                } else {
-                    return new CommandResult("wifi", "status", params);
+                return analyzeWiFiCommand(text);
+            }
+
+            // Команды для CleverHome
+            if (containsAny(lower, CLEVERHOME_KEYWORDS)) {
+                if (lower.contains("перезапуск") || lower.contains("рестарт") ||
+                        lower.contains("перезагрузи") || lower.contains("заново") ||
+                        lower.contains("рестартнуть")) {
+                    Log.d(TAG, "Определено: cleverhome + restart");
+                    return new CommandResult("cleverhome", "restart", params);
+                }
+                else if (lower.contains("останови") || lower.contains("закрой") ||
+                        lower.contains("выключи") || lower.contains("заверши")) {
+                    Log.d(TAG, "Определено: cleverhome + stop");
+                    return new CommandResult("cleverhome", "stop", params);
+                }
+                else if (lower.contains("статус") || lower.contains("состояние") ||
+                        lower.contains("работает") || lower.contains("запущен")) {
+                    Log.d(TAG, "Определено: cleverhome + status");
+                    return new CommandResult("cleverhome", "status", params);
+                }
+                else if (lower.contains("открой") || lower.contains("запусти") ||
+                        lower.contains("включи") || lower.contains("старт") ||
+                        lower.contains("запуск") || lower.contains("открыть")) {
+                    Log.d(TAG, "Определено: cleverhome + launch");
+                    return new CommandResult("cleverhome", "launch", params);
+                }
+                else {
+                    Log.d(TAG, "Определено: cleverhome + launch (по умолчанию)");
+                    return new CommandResult("cleverhome", "launch", params);
                 }
             }
 
-            // Запуск приложений
-            if (containsAny(lower, LAUNCH_KEYWORDS)) {
-                if (lower.contains("настройк")) {
-                    params.put("app", "settings");
-                } else if (lower.contains("камер")) {
-                    params.put("app", "camera");
-                } else {
-                    params.put("app", "settings");
-                }
-                return new CommandResult("launch", "open", params);
+            // Перезагрузка устройства
+            if ((lower.contains("перезагрузка") || lower.contains("рестарт") ||
+                    lower.contains("перезагрузи") || lower.contains("перезапуск")) &&
+                    (lower.contains("устройство") || lower.contains("телефон") ||
+                            lower.contains("система") || lower.contains("гаджет") ||
+                            lower.contains("девайс") || lower.contains("устройства"))) {
+                Log.d(TAG, "Определено: device + reboot");
+                return new CommandResult("device", "reboot", params);
+            }
+
+            // Выключение устройства
+            if ((lower.contains("выключи") || lower.contains("отключи") ||
+                    lower.contains("выключение") || lower.contains("отключение")) &&
+                    (lower.contains("устройство") || lower.contains("телефон") ||
+                            lower.contains("система") || lower.contains("гаджет") ||
+                            lower.contains("девайс") || lower.contains("устройства"))) {
+                Log.d(TAG, "Определено: device + shutdown");
+                return new CommandResult("device", "shutdown", params);
+            }
+
+            // Режим сна
+            if ((lower.contains("сон") || lower.contains("спящий") ||
+                    lower.contains("режим сна") || lower.contains("усни")) &&
+                    (lower.contains("устройство") || lower.contains("телефон") ||
+                            lower.contains("гаджет") || lower.contains("экран"))) {
+                Log.d(TAG, "Определено: device + sleep");
+                return new CommandResult("device", "sleep", params);
             }
 
         } catch (JSONException e) {
@@ -564,6 +633,114 @@ public class TinyLLMProcessor {
         @Override
         public String toString() {
             return "CommandResult{command='" + command + "', action='" + action + "', params=" + params + "}";
+        }
+    }
+
+    private CommandResult analyzeWiFiCommand(String text) {
+        String lower = text.toLowerCase().trim();
+        JSONObject params = new JSONObject();
+
+        try {
+            // Исправление ошибок распознавания
+            String corrected = correctSpeechErrorsAI(lower);
+            if (!corrected.equals(lower)) {
+                Log.d(TAG, "Исправлена WiFi команда: \"" + lower + "\" → \"" + corrected + "\"");
+                lower = corrected;
+            }
+
+            // Команды сканирования/поиска/списка сетей
+            if (lower.contains("сканир") || lower.contains("scan") ||
+                    lower.contains("поиск") || lower.contains("найди") ||
+                    lower.contains("список") || lower.contains("показать") ||
+                    lower.contains("сети") || lower.contains("networks") ||
+                    lower.contains("доступные") || lower.contains("available") ||
+                    lower.contains("поискать") || lower.contains("посканировать") ||
+                    lower.contains("сканирование") || lower.contains("посканируй")) {
+
+                Log.d(TAG, "Определена команда WiFi SCAN");
+                return new CommandResult("wifi", "scan", params);
+            }
+
+            // Включение WiFi
+            else if (lower.contains("включи") || lower.contains("включить") ||
+                    lower.contains("on") || lower.contains("enable") ||
+                    lower.contains("активир") || lower.contains("запусти") ||
+                    lower.contains("подключи") || lower.contains("подключить")) {
+
+                Log.d(TAG, "Определена команда WiFi ENABLE");
+                return new CommandResult("wifi", "enable", params);
+            }
+
+            // Выключение WiFi
+            else if (lower.contains("выключи") || lower.contains("выключить") ||
+                    lower.contains("off") || lower.contains("disable") ||
+                    lower.contains("деактивир") || lower.contains("останови") ||
+                    lower.contains("отключи") || lower.contains("отключить")) {
+
+                Log.d(TAG, "Определена команда WiFi DISABLE");
+                return new CommandResult("wifi", "disable", params);
+            }
+
+            // Подключение к конкретной сети
+            else if (lower.contains("подключись") || lower.contains("подключиться") ||
+                    lower.contains("connect") || lower.contains("соедин")) {
+
+                // Попытка извлечения SSID и пароль
+                Pattern pattern = Pattern.compile("подключи(?:сь|ться)?\\s+(?:к|к сети)?\\s+([^\\s]+)(?:\\s+пароль\\s+([^\\s]+))?");
+                Matcher matcher = pattern.matcher(lower);
+
+                if (matcher.find()) {
+                    String ssid = matcher.group(1);
+                    String password = matcher.group(2);
+
+                    params.put("ssid", ssid);
+                    if (password != null) {
+                        params.put("password", password);
+                    }
+
+                    Log.d(TAG, "Определена команда WiFi CONNECT к сети: " + ssid);
+                    return new CommandResult("wifi", "connect", params);
+                }
+            }
+
+            // Статус WiFi
+            else if (lower.contains("статус") || lower.contains("status") ||
+                    lower.contains("состояние") || lower.contains("как дела") ||
+                    lower.contains("что с") || lower.contains("информация") ||
+                    lower.contains("инфо") || lower.contains("info") ||
+                    lower.contains("проверь") || lower.contains("проверка") ||
+                    lower.matches(".*wifi.*|.*вай.*фай.*")) {
+
+                // Если просто "вай фай" без других команд - показываем статус
+                Log.d(TAG, "Определена команда WiFi STATUS");
+                return new CommandResult("wifi", "status", params);
+            }
+
+            // Сброс/перезапуск WiFi
+            else if (lower.contains("сброс") || lower.contains("reset") ||
+                    lower.contains("перезапуск") || lower.contains("рестарт") ||
+                    lower.contains("переподключи")) {
+
+                Log.d(TAG, "Определена команда WiFi RESET");
+                return new CommandResult("wifi", "reset", params);
+            }
+
+            // Получение информации о WiFi
+            else if (lower.contains("подробности") || lower.contains("детали") ||
+                    lower.contains("подробная") || lower.contains("полная") ||
+                    lower.contains("информация о") || lower.contains("сведения")) {
+
+                Log.d(TAG, "Определена команда WiFi INFO");
+                return new CommandResult("wifi", "info", params);
+            }
+
+            // Если просто "вай фай" без уточнения - показываем статус
+            Log.d(TAG, "Неопределенная WiFi команда, возвращаем STATUS по умолчанию");
+            return new CommandResult("wifi", "status", params);
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Ошибка создания параметров WiFi команды", e);
+            return new CommandResult("wifi", "status", new JSONObject());
         }
     }
 }

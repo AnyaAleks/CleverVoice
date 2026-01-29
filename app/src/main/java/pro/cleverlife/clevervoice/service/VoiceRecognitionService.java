@@ -48,11 +48,11 @@ public class VoiceRecognitionService {
             try {
                 Log.i(TAG, "Starting Vosk initialization...");
 
-                // Копируем модель из assets
+                // Копирование модели из assets
                 String modelPath = copyModelFromAssets(context);
                 Log.d(TAG, "Model path: " + modelPath);
 
-                // Проверяем, что модель скопировалась корректно
+                // Проверка на корректное сканирование
                 File modelDir = new File(modelPath);
                 if (!modelDir.exists() || !modelDir.isDirectory()) {
                     throw new IOException("Model directory not found: " + modelPath);
@@ -69,16 +69,16 @@ public class VoiceRecognitionService {
                     Log.d(TAG, " - " + file.getName() + " (" + file.length() + " bytes)");
                 }
 
-                // Проверяем наличие обязательных файлов
+                // Проверка на наличие обязательных файлов
                 if (!checkRequiredFiles(modelDir)) {
                     throw new IOException("Required model files are missing");
                 }
 
-                // Загружаем модель
+                // Загрузка модели
                 Log.d(TAG, "Loading Vosk model...");
                 model = new Model(modelPath);
 
-                // Создаем распознаватель
+                // Создание распознавателя
                 Log.d(TAG, "Creating recognizer...");
                 recognizer = new Recognizer(model, 16000.0f);
 
@@ -101,7 +101,6 @@ public class VoiceRecognitionService {
     private boolean checkRequiredFiles(File modelDir) {
         String[] requiredFiles = {
                 "am/final.mdl",
-                //"graph/words.txt",
                 "conf/mfcc.conf"
         };
 
@@ -118,7 +117,7 @@ public class VoiceRecognitionService {
     private String copyModelFromAssets(Context context) throws IOException {
         File modelDir = new File(context.getFilesDir(), "vosk-model-ru");
 
-        // Всегда пересоздаем папку для чистоты
+        // Всегда пересоздается папка
         if (modelDir.exists()) {
             deleteRecursive(modelDir);
         }
@@ -130,7 +129,7 @@ public class VoiceRecognitionService {
 
         Log.d(TAG, "Created model directory: " + modelDir.getAbsolutePath());
 
-        // Копируем содержимое вложенной папки напрямую в modelDir
+        // Копирование содержимого вложенной папки напрямую в modelDir
         copyModelContents(context, "vosk-model-ru/vosk-model-small-ru-0.22", modelDir.getAbsolutePath());
 
         return modelDir.getAbsolutePath();
@@ -156,14 +155,14 @@ public class VoiceRecognitionService {
 
             String[] subFiles = context.getAssets().list(newAssetPath);
             if (subFiles != null && subFiles.length > 0) {
-                // Это директория - рекурсивно копируем
+                // Директория - рекурсивное копирование
                 File destDir = new File(newDestinationPath);
                 if (!destDir.exists()) {
                     destDir.mkdirs();
                 }
                 copyModelContents(context, newAssetPath, newDestinationPath);
             } else {
-                // Это файл - копируем
+                // Файл - копируется
                 copyFile(context, newAssetPath, newDestinationPath);
             }
         }
@@ -225,7 +224,7 @@ public class VoiceRecognitionService {
         }
 
         isListening = true;
-        isActivated = false; // Сбрасываем активацию при старте
+        isActivated = false;
         audioService.startRecording(new AudioRecordService.AudioCallback() {
             @Override
             public void onAudioBuffer(short[] buffer) {
@@ -271,8 +270,8 @@ public class VoiceRecognitionService {
                 lower.contains("кливер") ||
                 lower.contains("кливэр") ||
                 lower.contains("clever") ||
-                lower.matches(".*к[лэи]вер.*") ||  // regex для вариаций
-                lower.contains(" clever ");         // отдельное слово
+                lower.matches(".*к[лэи]вер.*") ||
+                lower.contains(" clever ");
     }
 
     private void processRecognitionResult(String result) {

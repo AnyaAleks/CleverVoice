@@ -31,7 +31,6 @@ public class BrightnessService {
 
     public static void setScreenBrightness(Context _context, int brightnessValue) {
         Log.i("hhhh", brightnessValue + "");
-        // Убедитесь, что значение яркости находится в пределах от 0 до 255
         if (brightnessValue < 0) {
             brightnessValue = 0;
         } else if (brightnessValue > 255) {
@@ -48,28 +47,7 @@ public class BrightnessService {
 
     public static boolean requestPermissionWriteSettings(){
         return Settings.System.canWrite(context);
-    //        Log.i("Request!", "start");
-    //        int res = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_SETTINGS);
-    //        Log.i("Request!", "res: " + res);
-    //        if (res == PackageManager.PERMISSION_GRANTED) {
-    //            return true;
-    //        }
-    //        Log.i("Request!", "res-continue");
-    //        ActivityCompat.requestPermissions((MainActivity) context, new String[]{Manifest.permission.WRITE_SETTINGS}, REQUEST_CODE_WRITE_SETTINGS);
-    //        res = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_SETTINGS);
-    //        boolean resContext = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_SETTINGS) == PackageManager.PERMISSION_GRANTED;
-    //        Log.i("Request!", "res-checkselfper:" + res + "  " + resContext);
-    //
-    //        boolean b = (res == PackageManager.PERMISSION_GRANTED);
-    //        Log.i("Request!", "b " + b);
-    //        return b;
     }
-
-    //Методы для API
-//    public boolean setScreenBrightness(int brightnessValue) {
-//        setScreenBrightness(context, brightnessValue);
-//        return true;
-//    }
 
     public boolean increaseBrightness(int delta) {
         int current = getCurrentBrightness(context);
@@ -82,11 +60,6 @@ public class BrightnessService {
         setScreenBrightness(context, current - delta);
         return true;
     }
-
-//    public boolean setMaxBrightness() {
-//        setScreenBrightness(context, 255);
-//        return true;
-//    }
 
     public boolean setMinBrightness() {
         setScreenBrightness(context, 0);
@@ -142,7 +115,6 @@ public class BrightnessService {
     public boolean setScreenBrightness(int brightness) {
         Log.d(TAG, "Вызов setScreenBrightness(" + brightness + ")");
 
-        // Проверяем диапазон
         if (brightness < 0) brightness = 0;
         if (brightness > 255) brightness = 255;
 

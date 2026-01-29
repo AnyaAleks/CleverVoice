@@ -24,12 +24,8 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     }
 
     private void executeStartupCommands(Context context) {
-        // Здесь можно выполнить ваши команды через Runtime.exec()
-        // или вызвать методы из MainActivity
         if (MainActivity.getInstance() != null) {
             MainActivity.getInstance().executeCommand("am start -n pro.cleverlife.cleverroom/.SHActivity");
-            //            MainActivity.getInstance().executeCommand("settings put secure location_mode 3");
-            // Другие команды...
         }
     }
 }

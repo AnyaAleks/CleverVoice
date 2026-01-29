@@ -16,7 +16,6 @@ public class SoundManager {
         Log.i(TAG, "SoundManager initialized");
     }
 
-    // Правильное название метода
     public void initializeWithSounds(int successSoundResId, int errorSoundResId) {
         try {
             // Инициализация звуков используя переданные resource ID

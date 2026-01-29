@@ -47,14 +47,6 @@ public class AppLauncher {
         appPackageMap.put("почта", "com.android.email");
         appPackageMap.put("calendar", "com.android.calendar");
         appPackageMap.put("календарь", "com.android.calendar");
-
-        // Популярные сторонние приложения
-        appPackageMap.put("whatsapp", "com.whatsapp");
-        appPackageMap.put("вотсап", "com.whatsapp");
-        appPackageMap.put("telegram", "org.telegram.messenger");
-        appPackageMap.put("телеграм", "org.telegram.messenger");
-        appPackageMap.put("youtube", "com.google.android.youtube");
-        appPackageMap.put("ютуб", "com.google.android.youtube");
     }
 
     public boolean launchAppByName(String appName) {
